@@ -12,11 +12,14 @@ import { ThemedView } from '../../components/atoms/ThemedView';
 import TransactionsList from '../../components/organisms/TransactionsList';
 import { NewTransactionModal } from '../../components/organisms/NewTransactionModal';
 import { useState } from 'react';
+import { TTransaction } from '../../types/models';
 
 const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
   const { current_user, setCurrentUser } = useCurrentUserContext();
   const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
   const { mutate: deleteTransaction } = useDeleteTransactions();
+
+  const [transaction, setTransaction] = useState<TTransaction | null>(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -69,6 +72,10 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
             <TransactionsList
               data_transactions={data_transactions}
               handleDeleteTransaction={handleDeleteTransaction}
+              onClickTransaction={(editable_transaction) => {
+                setTransaction(editable_transaction);
+                setIsModalVisible(true);
+              }}
             />
           )}
         </ThemedView>
@@ -87,6 +94,7 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
         <NewTransactionModal
           visible={isModalVisible}
           onClose={() => setIsModalVisible(false)}
+          transaction={transaction}
         />
       </ThemedView>
     </ScreenLayout>

@@ -3,14 +3,16 @@ import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedView } from '../atoms/ThemedView';
 import { ThemedText } from '../atoms/ThemedText';
 import { TListTransactionsResponse } from '../../types/api';
+import { TTransaction } from '../../types/models';
 
 type TTransactionsListProps = {
   data_transactions?: TListTransactionsResponse
   handleDeleteTransaction: (id: string) => void
+  onClickTransaction: (transaction: TTransaction) => void
 }
 
 const TransactionsList = (props: TTransactionsListProps) => {
-  const { data_transactions, handleDeleteTransaction } = props;
+  const { data_transactions, handleDeleteTransaction, onClickTransaction } = props;
 
   const formatValue = (value: number) => {
     return Math.abs(value).toFixed(2).replace('.', ',');
@@ -30,7 +32,7 @@ const TransactionsList = (props: TTransactionsListProps) => {
         <Fragment>
           <ScrollView style={styles.transactionsList}>
             {data_transactions.transactions.map((transaction) => (
-              <ThemedView key={transaction.transactionID} style={styles.transactionItem}>
+              <TouchableOpacity key={transaction.transactionID} style={styles.transactionItem} onPress={() => onClickTransaction(transaction)}>
                 <ThemedView>
                   <ThemedText style={styles.transactionDate}>{transaction.date}</ThemedText>
                   <TouchableOpacity onPress={() => {}}>
@@ -46,7 +48,7 @@ const TransactionsList = (props: TTransactionsListProps) => {
                   </ThemedText>
                   <TouchableOpacity onPress={() => handleDeleteTransaction(transaction.transactionID)} />
                 </ThemedView>
-              </ThemedView>
+              </TouchableOpacity>
             ))}
           </ScrollView>
 

@@ -1,13 +1,21 @@
 import { useThemeColor } from '../../hooks/useThemeColor';
-import { ActivityIndicator } from 'react-native';
-import { ThemedView } from '../atoms/ThemedView';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 export function Loader() {
   const color = useThemeColor({}, 'text');
 
   return (
-    <ThemedView>
+    <View style={styles.container}>
       <ActivityIndicator size="small" color={color} />
-    </ThemedView>
+    </View>
   );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

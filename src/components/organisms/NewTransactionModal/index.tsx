@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
 import { ThemedTextInput } from '../../atoms/ThemedTextInput';
+// @ts-ignore
 import { Picker } from '@react-native-picker/picker';
 import { TNewTransactionForm } from '../../../types/forms';
 import { TTransaction } from '../../../types/models';
@@ -10,17 +11,19 @@ import { useCreateTransactions } from '../../../hooks/api/transactions/useCreate
 import { Loader } from '../../atoms/Loader';
 import { formatMoney, unformatMoney } from '../../../utils/formatMoney';
 import Toast from 'react-native-toast-message';
+import { useUpdateTransactions } from '../../../hooks/api/transactions/useUpdateTransactions';
 
 interface NewTransactionModalProps {
   visible: boolean;
   onClose: () => void;
-  transaction?: TTransaction;
+  transaction?: TTransaction | null;
 }
 
 export const NewTransactionModal = (props: NewTransactionModalProps) => {
   const { visible, onClose, transaction } = props;
 
   const { mutate: createTransactionMutation, isPending: is_create_transaction_pending } = useCreateTransactions();
+  const { mutate: updateTransactionMutation, isPending: is_update_transaction_pending } = useUpdateTransactions();
   const [form, setForm] = useState<TNewTransactionForm>({
     type: 'deposit',
     description: '',
@@ -28,31 +31,68 @@ export const NewTransactionModal = (props: NewTransactionModalProps) => {
   });
 
   const handleSave = () => {
-    createTransactionMutation({
-      body: {
-        type: form.type,
-        description: form.description,
-        value: Number(unformatMoney(form.value)) / 100,
-      },
-      onSuccess: () => {
-        Toast.show({
-          type: 'success',
-          text1: 'Transação criada!',
-          text2: 'Sua transação foi criada com sucesso',
-        });
-        onClose();
-      },
-      onError: () => {
-        Toast.show({
-          type: 'error',
-          text1: 'Erro ao criar transação!',
-          text2: 'Ocorreu um erro ao criar a transação',
-        });
-      },
-    });
+    if(transaction){
+      updateTransactionMutation({
+        body: {
+          type: form.type,
+          description: form.description,
+          value: Number(unformatMoney(form.value)) / 100,
+        },
+        id: transaction.transactionID,
+        onSuccess: () => {
+          Toast.show({
+            type: 'success',
+            text1: 'Transação atualizada!',
+            text2: 'Sua transação foi atualizada com sucesso',
+          });
+          onClose();
+        },
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Erro ao atualizar transação!',
+            text2: 'Ocorreu um erro ao atualizar a transação',
+          });
+        },
+      });
+
+    } else {
+      createTransactionMutation({
+        body: {
+          type: form.type,
+          description: form.description,
+          value: Number(unformatMoney(form.value)) / 100,
+        },
+        onSuccess: () => {
+          Toast.show({
+            type: 'success',
+            text1: 'Transação criada!',
+            text2: 'Sua transação foi criada com sucesso',
+          });
+          onClose();
+        },
+        onError: () => {
+          Toast.show({
+            type: 'error',
+            text1: 'Erro ao criar transação!',
+            text2: 'Ocorreu um erro ao criar a transação',
+          });
+        },
+      });
+    }
   };
 
-  const is_submit_disabled = is_create_transaction_pending || !form.value || !form.description || !form.type;
+  const is_submit_disabled = is_create_transaction_pending  || is_update_transaction_pending || !form.value || !form.description || !form.type;
+
+  useEffect(() => {
+    if (transaction) {
+      setForm({
+        type: transaction.type,
+        description: transaction.description,
+        value: formatMoney(transaction.value.toString()),
+      });
+    }
+  }, [transaction]);
 
   return (
     <Modal
@@ -63,10 +103,10 @@ export const NewTransactionModal = (props: NewTransactionModalProps) => {
     >
       <ThemedView style={styles.modalOverlay}>
         <ThemedView style={styles.modalContent}>
-          <ThemedText style={styles.title}>Nova Transação</ThemedText>
+          <ThemedText style={styles.title}>{transaction ? `Editar ${transaction.type === 'deposit' ? 'Entrada' : 'Saída'}` : 'Nova Transação'}</ThemedText>
 
           <ThemedView style={styles.formGroup}>
-            <ThemedText>Type</ThemedText>
+            <ThemedText>Tipo</ThemedText>
             <ThemedView style={styles.pickerContainer}>
               <Picker
                 selectedValue={form.type}
@@ -102,11 +142,11 @@ export const NewTransactionModal = (props: NewTransactionModalProps) => {
           </ThemedView>
 
           <ThemedView style={styles.buttonContainer}>
-            <TouchableOpacity disabled={is_create_transaction_pending} style={[styles.button, styles.cancelButton]} onPress={onClose}>
+            <TouchableOpacity disabled={(is_create_transaction_pending || is_update_transaction_pending )} style={[styles.button, styles.cancelButton]} onPress={onClose}>
               <ThemedText style={styles.buttonText}>Cancelar</ThemedText>
             </TouchableOpacity>
               <TouchableOpacity disabled={is_submit_disabled} style={[styles.button, is_submit_disabled ? styles.saveButtonDisabled : styles.saveButton]} onPress={handleSave}>
-                <ThemedText style={styles.buttonText}>{is_create_transaction_pending ? <Loader /> : 'Salvar'}</ThemedText>
+                <ThemedText style={styles.buttonText}>{(is_create_transaction_pending || is_update_transaction_pending ) ? <Loader /> : 'Salvar'}</ThemedText>
             </TouchableOpacity>
           </ThemedView>
         </ThemedView>
@@ -157,7 +197,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   cancelButton: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#f16f6f',
   },
   saveButton: {
     backgroundColor: '#A328D6',
