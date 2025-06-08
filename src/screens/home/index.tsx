@@ -1,15 +1,15 @@
 import { TouchableOpacity, ScrollView, Alert, StyleSheet } from 'react-native';
-import ScreenLayout from '../../components/ScreenLayout';
-import { ThemedText } from '../../components/ThemedText';
+import ScreenLayout from '../../components/layouts/ScreenLayout';
+import { ThemedText } from '../../components/atoms/ThemedText';
 import useListTransactions from '../../hooks/api/transactions/useListTransactions';
 import { useDeleteTransactions } from '../../hooks/api/transactions/useDeleteTransactions';
-import { ThemedView } from '../../components/ThemedView';
 import { Fragment } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useCurrentUserContext } from '../../context/current_user';
 import { IScreenProps } from '../../types/screen';
 import { LocalStorage } from '../../services/storage';
 import { StorageKeys } from '../../types/storage';
+import { ThemedView } from '../../components/atoms/ThemedView';
 
 const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
   const { current_user, setCurrentUser } = useCurrentUserContext();

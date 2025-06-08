@@ -1,5 +1,5 @@
 import { SafeAreaView, StyleSheet } from 'react-native';
-import { ThemedView } from './ThemedView';
+import { ThemedView } from '../atoms/ThemedView';
 
 const ScreenLayout = ({ children }: { children: React.ReactNode }) => {
   return (

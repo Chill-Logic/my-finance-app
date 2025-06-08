@@ -1,6 +1,6 @@
-import { useThemeColor } from '../hooks/useThemeColor';
+import { useThemeColor } from '../../hooks/useThemeColor';
 import { ActivityIndicator } from 'react-native';
-import { ThemedView } from './ThemedView';
+import { ThemedView } from '../atoms/ThemedView';
 
 export function Loader() {
   const color = useThemeColor({}, 'text');

@@ -7,14 +7,14 @@ import {
 
 import { LocalStorage } from '../../services/storage';
 import { Alert } from 'react-native';
-import { ThemedView } from '../../components/ThemedView';
-import { ThemedText } from '../../components/ThemedText';
-import { Loader } from '../../components/Loader';
-import ScreenLayout from '../../components/ScreenLayout';
+import { ThemedText } from '../../components/atoms/ThemedText';
+import { Loader } from '../../components/atoms/Loader';
+import ScreenLayout from '../../components/layouts/ScreenLayout';
 import { IScreenProps } from '../../types/screen';
 import { useSignIn } from '../../hooks/api/auth/useSignIn';
 import { useCurrentUserContext } from '../../context/current_user';
 import { StorageKeys } from '../../types/storage';
+import { ThemedView } from '../../components/atoms/ThemedView';
 
 const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
   const { setCurrentUser } = useCurrentUserContext();
