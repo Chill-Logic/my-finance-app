@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { LocalStorage } from '../../services/storage';
 import { REACT_API_URL } from '@env';
+import { LocalStorage } from '../../../services/storage';
 
 export const getAxiosInstance = async () => {
   const token = await LocalStorage.getItem('token');
