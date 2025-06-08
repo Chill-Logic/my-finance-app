@@ -4,6 +4,7 @@
 
 # Xcode
 #
+*.keystore
 build/
 *.pbxuser
 !default.pbxuser
@@ -26,9 +27,11 @@ DerivedData
 # Android/IntelliJ
 #
 build/
+release/
 .idea
 .gradle
 local.properties
+release.properties
 *.iml
 *.hprof
 .cxx/

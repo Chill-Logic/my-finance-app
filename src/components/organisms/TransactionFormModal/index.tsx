@@ -13,13 +13,13 @@ import { formatMoney, unformatMoney } from '../../../utils/formatMoney';
 import Toast from 'react-native-toast-message';
 import { useUpdateTransactions } from '../../../hooks/api/transactions/useUpdateTransactions';
 
-interface NewTransactionModalProps {
+interface TransactionModalProps {
   visible: boolean;
   onClose: () => void;
   transaction?: TTransaction | null;
 }
 
-export const NewTransactionModal = (props: NewTransactionModalProps) => {
+export const TransactionFormModal = (props: TransactionModalProps) => {
   const { visible, onClose, transaction } = props;
 
   const { mutate: createTransactionMutation, isPending: is_create_transaction_pending } = useCreateTransactions();
@@ -93,13 +93,20 @@ export const NewTransactionModal = (props: NewTransactionModalProps) => {
       });
     }
   }, [transaction]);
-
+const handleClose = () => {
+  setForm({
+    type: 'deposit',
+    description: '',
+    value: '',
+  });
+  onClose();
+};
   return (
     <Modal
       visible={visible}
       transparent
       animationType="slide"
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
       <ThemedView style={styles.modalOverlay}>
         <ThemedView style={styles.modalContent}>
@@ -142,7 +149,7 @@ export const NewTransactionModal = (props: NewTransactionModalProps) => {
           </ThemedView>
 
           <ThemedView style={styles.buttonContainer}>
-            <TouchableOpacity disabled={(is_create_transaction_pending || is_update_transaction_pending )} style={[styles.button, styles.cancelButton]} onPress={onClose}>
+            <TouchableOpacity disabled={(is_create_transaction_pending || is_update_transaction_pending )} style={[styles.button, styles.cancelButton]} onPress={handleClose}>
               <ThemedText style={styles.buttonText}>Cancelar</ThemedText>
             </TouchableOpacity>
               <TouchableOpacity disabled={is_submit_disabled} style={[styles.button, is_submit_disabled ? styles.saveButtonDisabled : styles.saveButton]} onPress={handleSave}>

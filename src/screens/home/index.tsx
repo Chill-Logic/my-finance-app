@@ -9,7 +9,7 @@ import { LocalStorage } from '../../services/storage';
 import { StorageKeys } from '../../types/storage';
 import { ThemedView } from '../../components/atoms/ThemedView';
 import TransactionsList from '../../components/organisms/TransactionsList';
-import { NewTransactionModal } from '../../components/organisms/NewTransactionModal';
+import { TransactionFormModal } from '../../components/organisms/TransactionFormModal';
 import { useState } from 'react';
 import { TTransaction } from '../../types/models';
 
@@ -64,7 +64,10 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
         <ThemedView style={styles.buttonsContainer}>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => setIsModalVisible(true)}
+            onPress={() => {
+              setTransaction(null);
+              setIsModalVisible(true);
+            }}
           >
             <ThemedText style={styles.actionButtonText}>
               Novo Registro
@@ -72,9 +75,12 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
           </TouchableOpacity>
         </ThemedView>
 
-        <NewTransactionModal
+        <TransactionFormModal
           visible={isModalVisible}
-          onClose={() => setIsModalVisible(false)}
+          onClose={() => {
+            setIsModalVisible(false);
+            setTransaction(null);
+          }}
           transaction={transaction}
         />
       </ThemedView>
