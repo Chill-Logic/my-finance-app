@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   StyleSheet,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 
@@ -15,6 +14,7 @@ import { useSignIn } from '../../hooks/api/auth/useSignIn';
 import { useCurrentUserContext } from '../../context/current_user';
 import { StorageKeys } from '../../types/storage';
 import { ThemedView } from '../../components/atoms/ThemedView';
+import { ThemedTextInput } from '../../components/atoms/ThemedTextInput';
 
 const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
   const { setCurrentUser } = useCurrentUserContext();
@@ -49,7 +49,7 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
   return (
     <ScreenLayout>
       <ThemedView style={styles.formContainer}>
-        <TextInput
+        <ThemedTextInput
           style={styles.input}
           placeholder="E-mail"
           placeholderTextColor="#666"
@@ -59,7 +59,7 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
           onChangeText={(value) => onChange('email', value)}
           editable={!is_sign_in_pending}
         />
-        <TextInput
+        <ThemedTextInput
           style={styles.input}
           placeholder="Senha"
           placeholderTextColor="#666"

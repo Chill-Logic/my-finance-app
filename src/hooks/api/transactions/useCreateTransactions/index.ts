@@ -7,7 +7,7 @@ import { QUERY_KEYS } from '../../../../constants/QueryKeys';
 
 export const useCreateTransactions = () => {
   return useMutation({
-    mutationFn: async ({ body }: TMutationParams<TListTransactionsResponse, TTransaction>) => {
+    mutationFn: async ({ body }: TMutationParams<TListTransactionsResponse, Pick<TTransaction, 'type' | 'description' | 'value'>>) => {
       const axios = await getAxiosInstance();
       const response = await axios.post<TListTransactionsResponse>('/transactions', body);
       return response.data;

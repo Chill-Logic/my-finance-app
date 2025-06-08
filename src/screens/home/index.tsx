@@ -10,11 +10,15 @@ import { LocalStorage } from '../../services/storage';
 import { StorageKeys } from '../../types/storage';
 import { ThemedView } from '../../components/atoms/ThemedView';
 import TransactionsList from '../../components/organisms/TransactionsList';
+import { NewTransactionModal } from '../../components/organisms/NewTransactionModal';
+import { useState } from 'react';
 
 const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
   const { current_user, setCurrentUser } = useCurrentUserContext();
   const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
   const { mutate: deleteTransaction } = useDeleteTransactions();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const handleDeleteTransaction = (id: string) => {
     Alert.alert(
@@ -72,13 +76,18 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
         <ThemedView style={styles.buttonsContainer}>
           <TouchableOpacity
             style={styles.actionButton}
-            onPress={() => {}}
+            onPress={() => setIsModalVisible(true)}
           >
             <ThemedText style={styles.actionButtonText}>
               Novo Registro
             </ThemedText>
           </TouchableOpacity>
         </ThemedView>
+
+        <NewTransactionModal
+          visible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+        />
       </ThemedView>
     </ScreenLayout>
   );
