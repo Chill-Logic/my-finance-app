@@ -1,8 +1,7 @@
-import { TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 import ScreenLayout from '../../components/layouts/ScreenLayout';
 import { ThemedText } from '../../components/atoms/ThemedText';
 import useListTransactions from '../../hooks/api/transactions/useListTransactions';
-import { useDeleteTransactions } from '../../hooks/api/transactions/useDeleteTransactions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useCurrentUserContext } from '../../context/current_user';
 import { IScreenProps } from '../../types/screen';
@@ -17,28 +16,11 @@ import { TTransaction } from '../../types/models';
 const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
   const { current_user, setCurrentUser } = useCurrentUserContext();
   const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
-  const { mutate: deleteTransaction } = useDeleteTransactions();
 
   const [transaction, setTransaction] = useState<TTransaction | null>(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const handleDeleteTransaction = (id: string) => {
-    Alert.alert(
-      'Excluir Transação',
-      'Deseja excluir esta transação?',
-      [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Excluir',
-          onPress: () => deleteTransaction({ id }),
-        },
-      ]
-    );
-  };
 
   const handleLogout = () => {
     LocalStorage.deleteItem(StorageKeys.TOKEN);
@@ -71,7 +53,6 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
           {!is_data_transactions_loading && (
             <TransactionsList
               data_transactions={data_transactions}
-              handleDeleteTransaction={handleDeleteTransaction}
               onClickTransaction={(editable_transaction) => {
                 setTransaction(editable_transaction);
                 setIsModalVisible(true);
