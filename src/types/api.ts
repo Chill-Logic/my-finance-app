@@ -1,6 +1,6 @@
-import { IUser, TTransaction } from './models';
+import { TUser, TTransaction } from './models';
 
-export type TSignInResponse = IUser & {
+export type TSignInResponse = TUser & {
   token: string;
 };
 

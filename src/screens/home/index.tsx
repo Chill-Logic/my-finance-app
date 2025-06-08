@@ -5,8 +5,14 @@ import useListTransactions from '../../hooks/api/transactions/useListTransaction
 import { useDeleteTransactions } from '../../hooks/api/transactions/useDeleteTransactions';
 import { ThemedView } from '../../components/ThemedView';
 import { Fragment } from 'react';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useCurrentUserContext } from '../../context/current_user';
+import { IScreenProps } from '../../types/screen';
+import { LocalStorage } from '../../services/storage';
+import { StorageKeys } from '../../types/storage';
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
+  const { current_user, setCurrentUser } = useCurrentUserContext();
   const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
   const { mutate: deleteTransaction } = useDeleteTransactions();
 
@@ -39,19 +45,30 @@ const HomeScreen = () => {
     value >= 0 ? styles.textGreen : styles.textRed
   );
 
+  const handleLogout = () => {
+    LocalStorage.deleteItem(StorageKeys.TOKEN);
+    setCurrentUser({ data: null });
+    navigation.replace('SignIn');
+  };
+
   return (
     <ScreenLayout>
       <ThemedView style={styles.container}>
         <ThemedView style={styles.header}>
-          {/* <ThemedText style={{ fontSize: 26 }}>Olá, {user?.username}</ThemedText> */}
+          <ThemedText style={styles.title}>Olá, {current_user?.data?.nome}</ThemedText>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Icon name="logout" size={24} color="#900" />
+          </TouchableOpacity>
         </ThemedView>
 
-        <ThemedView style={[
-          styles.transactionsContainer,
-          data_transactions?.transactions?.length
-            ? styles.transactionsContainerWithData
-            : styles.transactionsContainerEmpty,
-        ]}>
+        <ThemedView
+          style={[
+            styles.transactionsContainer,
+            data_transactions?.transactions?.length
+              ? styles.transactionsContainerWithData
+              : styles.transactionsContainerEmpty,
+          ]
+        }>
           {is_data_transactions_loading ? (
             <ThemedText>Carregando...</ThemedText>
           ) : data_transactions?.transactions && data_transactions?.transactions.length > 0 ? (
@@ -118,6 +135,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
   },
+  logoutButton: {
+    padding: 10,
+  },
+  title: {
+    fontSize: 26,
+  },
   transactionsContainer: {
     flex: 1,
     borderRadius: 5,
@@ -138,7 +161,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
-    paddingRight: 10,
   },
   transactionDate: {
     color: '#C6C6C6',

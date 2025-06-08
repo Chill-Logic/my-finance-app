@@ -1,4 +1,4 @@
-export type IUser = {
+export type TUser = {
   nome: string;
   email: string;
   _id: string;

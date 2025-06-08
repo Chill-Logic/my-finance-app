@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomeScreen from './src/screens/home';
+import CurrentUserProvider from './src/context/current_user';
 const Stack = createNativeStackNavigator();
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,12 +21,14 @@ function App(): React.JSX.Element {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="SignIn" component={SignInScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <CurrentUserProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="SignIn" component={SignInScreen} />
+            <Stack.Screen name="Home" component={HomeScreen} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </CurrentUserProvider>
     </QueryClientProvider>
   );
 }

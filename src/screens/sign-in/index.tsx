@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { useSignIn } from '../../hooks/useSignIn';
 import { LocalStorage } from '../../services/storage';
 import { Alert } from 'react-native';
 import { ThemedView } from '../../components/ThemedView';
@@ -13,8 +12,13 @@ import { ThemedText } from '../../components/ThemedText';
 import { Loader } from '../../components/Loader';
 import ScreenLayout from '../../components/ScreenLayout';
 import { IScreenProps } from '../../types/screen';
+import { useSignIn } from '../../hooks/api/auth/useSignIn';
+import { useCurrentUserContext } from '../../context/current_user';
+import { StorageKeys } from '../../types/storage';
 
 const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
+  const { setCurrentUser } = useCurrentUserContext();
+
   const [form, setForm] = useState({ email: '', senha: '' });
   const { mutate: signInMutation, isPending: is_sign_in_pending } = useSignIn();
 
@@ -31,7 +35,8 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
     signInMutation({
       body,
       onSuccess: (data) => {
-        LocalStorage.setItem('token', data.token);
+        LocalStorage.setItem(StorageKeys.TOKEN, data.token);
+        setCurrentUser({ data });
         navigation.replace('Home');
       },
       onError: (err) => {
