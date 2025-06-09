@@ -12,6 +12,7 @@ import { TSignUpForm } from '../../types/forms';
 import { IScreenProps } from '../../types/screen';
 
 import { Loader } from '../../components/atoms/Loader';
+import MyWalletLogo from '../../components/atoms/Logo';
 import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedTextInput } from '../../components/atoms/ThemedTextInput';
 import { ThemedView } from '../../components/atoms/ThemedView';
@@ -65,6 +66,9 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 	return (
 		<ScreenLayout>
 			<ThemedView style={styles.formContainer}>
+				<ThemedView style={styles.logoContainer}>
+					<MyWalletLogo />
+				</ThemedView>
 				<ThemedTextInput
 					style={styles.input}
 					placeholder='E-mail'
@@ -131,6 +135,9 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+	},
+	logoContainer: {
+		marginBottom: 24,
 	},
 	input: {
 		width: '100%',

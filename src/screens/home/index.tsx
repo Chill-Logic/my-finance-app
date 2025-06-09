@@ -9,7 +9,6 @@ import { LocalStorage } from '../../services/storage';
 
 import { TTransaction } from '../../types/models';
 import { IScreenProps } from '../../types/screen';
-import { StorageKeys } from '../../types/storage';
 
 import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedView } from '../../components/atoms/ThemedView';
@@ -26,9 +25,10 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 	const [ isModalVisible, setIsModalVisible ] = useState(false);
 
 	const handleLogout = () => {
-		LocalStorage.deleteItem(StorageKeys.TOKEN);
-		setCurrentUser({ data: null });
-		navigation.replace('SignIn');
+		LocalStorage.logout().then(() => {
+			setCurrentUser({ data: null });
+			navigation.replace('SignIn');
+		});
 	};
 
 	return (
