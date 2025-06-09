@@ -16,10 +16,11 @@ type TSelectInputProps = {
 	value: string;
 	onChange: (value: string)=> void;
 	label?: string;
+	disabled?: boolean;
 }
 
 const SelectInput = (props: TSelectInputProps) => {
-	const { options, value, onChange, label } = props;
+	const { options, value, onChange, label, disabled } = props;
 
 	return (
 		<ThemedView style={styles.container}>
@@ -29,6 +30,7 @@ const SelectInput = (props: TSelectInputProps) => {
 					selectedValue={value}
 					onValueChange={(option: string) => onChange(option)}
 					style={styles.picker}
+					enabled={!disabled}
 				>
 					{options.map((option) => (
 						<Picker.Item key={option.value} label={option.label} value={option.value} />
