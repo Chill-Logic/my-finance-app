@@ -3,15 +3,12 @@ import {
 	StyleSheet,
 	TouchableOpacity,
 } from 'react-native';
-import { Alert } from 'react-native';
+import Toast from 'react-native-toast-message';
 
-import { useSignIn } from '../../hooks/api/auth/useSignIn';
+import { useSignUp } from '../../hooks/api/auth/useSignUp';
 
-import { useCurrentUserContext } from '../../context/current_user';
-import { LocalStorage } from '../../services/storage';
-
+import { TSignUpBody } from '../../types/api';
 import { IScreenProps } from '../../types/screen';
-import { StorageKeys } from '../../types/storage';
 
 import { Loader } from '../../components/atoms/Loader';
 import { ThemedText } from '../../components/atoms/ThemedText';
@@ -19,32 +16,36 @@ import { ThemedTextInput } from '../../components/atoms/ThemedTextInput';
 import { ThemedView } from '../../components/atoms/ThemedView';
 import ScreenLayout from '../../components/layouts/ScreenLayout';
 
-const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
-	const { setCurrentUser } = useCurrentUserContext();
-
-	const [ form, setForm ] = useState({ email: '', senha: '' });
-	const { mutate: signInMutation, isPending: is_sign_in_pending } = useSignIn();
+const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
+	const [ values, setValues ] = useState({ nome: '', email: '', senha: '' });
+	const { mutate: signUpMutation, isPending: is_sign_up_pending } = useSignUp();
 
 	const onChange = (key: string, value: string) => {
-		setForm({ ...form, [key]: value });
+		setValues({ ...values, [key]: value });
 	};
 
 	const onSubmit = () => {
-		const body = {
-			email: form.email,
-			senha: form.senha,
+		const body: TSignUpBody = {
+			nome: values.nome,
+			email: values.email,
+			senha: values.senha,
 		};
 
-		signInMutation({
+		signUpMutation({
 			body,
 			onSuccess: (data) => {
-				LocalStorage.setItem(StorageKeys.TOKEN, data.token);
-				setCurrentUser({ data });
-				navigation.replace('Home');
+				Toast.show({
+					type: 'success',
+					text1: 'Cadastro realizado com sucesso!',
+				});
+				navigation.replace('SignIn');
 			},
 			onError: (err) => {
-				console.log('err :>> ', err);
-				Alert.alert('Erro', 'E-mail ou senha inválidos');
+				Toast.show({
+					type: 'error',
+					text1: 'Erro ao cadastrar usuário',
+					text2: err?.message,
+				});
 			},
 		});
 	};
@@ -58,9 +59,9 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 					placeholderTextColor='#666'
 					keyboardType='email-address'
 					autoCapitalize='none'
-					value={form.email}
+					value={values.email}
 					onChangeText={(value) => onChange('email', value)}
-					editable={!is_sign_in_pending}
+					editable={!is_sign_up_pending}
 				/>
 				<ThemedTextInput
 					style={styles.input}
@@ -68,23 +69,23 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 					placeholderTextColor='#666'
 					secureTextEntry
 					autoComplete='password'
-					value={form.senha}
+					value={values.senha}
 					onChangeText={(value) => onChange('senha', value)}
-					editable={!is_sign_in_pending}
+					editable={!is_sign_up_pending}
 				/>
 				<TouchableOpacity
-					style={[ styles.button, is_sign_in_pending && styles.buttonDisabled ]}
+					style={[ styles.button, is_sign_up_pending && styles.buttonDisabled ]}
 					onPress={onSubmit}
-					disabled={is_sign_in_pending}
+					disabled={is_sign_up_pending}
 				>
-					{is_sign_in_pending ? <Loader /> : <ThemedText style={styles.buttonText}>Entrar</ThemedText>}
+					{is_sign_up_pending ? <Loader /> : <ThemedText style={styles.buttonText}>Entrar</ThemedText>}
 				</TouchableOpacity>
 
 				<TouchableOpacity
 					style={styles.linkContainer}
-					onPress={() => navigation.navigate('SignUp')}
+					onPress={() => navigation.navigate('SignIn')}
 				>
-					<ThemedText style={styles.linkText}>Primeira vez? Cadastre-se!</ThemedText>
+					<ThemedText style={styles.linkText}>Já possui uma conta? Faça login!</ThemedText>
 				</TouchableOpacity>
 			</ThemedView>
 		</ScreenLayout>
@@ -133,4 +134,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default SignInScreen;
+export default SignUpScreen;

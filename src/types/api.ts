@@ -4,7 +4,7 @@ export type TSignInResponse = TUser & {
 	token: string;
 };
 
-export type SignUpResponse = {
+export type TSignUpResponse = {
 	message: string;
 }
 
@@ -25,7 +25,7 @@ export type TMutationParams<TResponse, TBody, TComplements = {}> = {
 	onError?: (error?: Error)=> void;
 } & TComplements;
 
-export type SignUpBody = {
+export type TSignUpBody = {
 	nome: string;
 	email: string;
 	senha: string;
