@@ -3,6 +3,8 @@ import { StyleSheet } from 'react-native';
 
 import { Picker } from '@react-native-picker/picker';
 
+import { useTheme } from '../../../context/theme';
+
 import { ThemedText } from '../ThemedText';
 import { ThemedView } from '../ThemedView';
 
@@ -21,6 +23,7 @@ type TSelectInputProps = {
 
 const SelectInput = (props: TSelectInputProps) => {
 	const { options, value, onChange, label, disabled } = props;
+	const { theme } = useTheme();
 
 	return (
 		<ThemedView style={styles.container}>
@@ -29,7 +32,7 @@ const SelectInput = (props: TSelectInputProps) => {
 				<Picker
 					selectedValue={value}
 					onValueChange={(option: string) => onChange(option)}
-					style={styles.picker}
+					style={[ styles.picker, { color: theme.colors.text } ]}
 					enabled={!disabled}
 				>
 					{options.map((option) => (

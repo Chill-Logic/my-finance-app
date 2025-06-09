@@ -77,15 +77,15 @@ const TransactionsList = (props: TTransactionsListProps) => {
 							<TouchableOpacity key={transaction.transactionID} style={styles.transactionItem} onPress={() => onClickTransaction(transaction)}>
 								<ThemedView>
 									<ThemedText style={styles.transactionDate}>{transaction.date}</ThemedText>
-									<TouchableOpacity onPress={() => {}}>
-										<ThemedText style={styles.transactionDescription}>{transaction.description}</ThemedText>
-									</TouchableOpacity>
+									<ThemedText style={styles.transactionDescription}>{transaction.description}</ThemedText>
 								</ThemedView>
 								<ThemedView style={styles.transactionRight}>
-									<ThemedText style={[
-										styles.transactionValue,
-										getTransactionColor(transaction.type),
-									]}>
+									<ThemedText
+										style={[
+											styles.transactionValue,
+											getTransactionColor(transaction.type),
+										]}
+									>
 										{formatValue(transaction.value)}
 									</ThemedText>
 									<TouchableOpacity onPress={() => handleDeleteTransaction(transaction)}>

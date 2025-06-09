@@ -13,6 +13,7 @@ import { IScreenProps } from '../../types/screen';
 import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedView } from '../../components/atoms/ThemedView';
 import ScreenLayout from '../../components/layouts/ScreenLayout';
+import { SettingsModal } from '../../components/organisms/SettingsModal';
 import { TransactionFormModal } from '../../components/organisms/TransactionFormModal';
 import TransactionsList from '../../components/organisms/TransactionList';
 
@@ -21,8 +22,8 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
 
 	const [ transaction, setTransaction ] = useState<TTransaction | null>(null);
-
 	const [ isModalVisible, setIsModalVisible ] = useState(false);
+	const [ isSettingsModalVisible, setIsSettingsModalVisible ] = useState(false);
 
 	const handleLogout = () => {
 		LocalStorage.logout().then(() => {
@@ -36,9 +37,17 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 			<ThemedView style={styles.container}>
 				<ThemedView style={styles.header}>
 					<ThemedText style={styles.title}>Olá, {current_user?.data?.nome}</ThemedText>
-					<TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-						<Icon name='logout' size={24} color='#900' />
-					</TouchableOpacity>
+					<ThemedView style={styles.headerButtons}>
+						<TouchableOpacity
+							style={styles.headerButton}
+							onPress={() => setIsSettingsModalVisible(true)}
+						>
+							<Icon name='settings' size={24} color='#A328D6' />
+						</TouchableOpacity>
+						<TouchableOpacity style={styles.headerButton} onPress={handleLogout}>
+							<Icon name='logout' size={24} color='#900' />
+						</TouchableOpacity>
+					</ThemedView>
 				</ThemedView>
 
 				<ThemedView
@@ -86,6 +95,11 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 					}}
 					transaction={transaction}
 				/>
+
+				<SettingsModal
+					visible={isSettingsModalVisible}
+					onClose={() => setIsSettingsModalVisible(false)}
+				/>
 			</ThemedView>
 		</ScreenLayout>
 	);
@@ -102,7 +116,11 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginBottom: 15,
 	},
-	logoutButton: {
+	headerButtons: {
+		flexDirection: 'row',
+		gap: 10,
+	},
+	headerButton: {
 		padding: 10,
 	},
 	title: {

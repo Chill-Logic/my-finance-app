@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextInput, TextInputProps, StyleSheet } from 'react-native';
 
-import { useTheme } from '../../../hooks/useTheme';
+import { useTheme } from '../../../context/theme';
 
 import { ThemedText } from '../ThemedText';
 import { ThemedView } from '../ThemedView';
@@ -12,7 +12,7 @@ interface ThemedTextInputProps extends TextInputProps {
 }
 
 export const ThemedTextInput = ({ style, error, label, ...props }: ThemedTextInputProps) => {
-	const { colors } = useTheme();
+	const { theme } = useTheme();
 
 	return (
 		<ThemedView style={styles.container}>
@@ -21,13 +21,13 @@ export const ThemedTextInput = ({ style, error, label, ...props }: ThemedTextInp
 				style={[
 					styles.input,
 					{
-						color: colors.text,
-						borderColor: error ? colors.error : colors.border,
-						backgroundColor: colors.background,
+						color: theme.colors.text,
+						borderColor: error ? theme.colors.error : theme.colors.border,
+						backgroundColor: theme.colors.background,
 					},
 					style,
 				]}
-				placeholderTextColor={colors.placeholder}
+				placeholderTextColor={theme.colors.placeholder}
 				{...props}
 			/>
 		</ThemedView>
