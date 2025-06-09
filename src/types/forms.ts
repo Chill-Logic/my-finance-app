@@ -5,3 +5,10 @@ export type TNewTransactionForm = {
 	description: string;
 	value: string;
 };
+
+export type TSignUpForm = {
+	nome: string;
+	email: string;
+	senha: string;
+	confirmar_senha: string;
+}

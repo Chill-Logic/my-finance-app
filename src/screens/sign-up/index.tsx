@@ -8,6 +8,7 @@ import Toast from 'react-native-toast-message';
 import { useSignUp } from '../../hooks/api/auth/useSignUp';
 
 import { TSignUpBody } from '../../types/api';
+import { TSignUpForm } from '../../types/forms';
 import { IScreenProps } from '../../types/screen';
 
 import { Loader } from '../../components/atoms/Loader';
@@ -16,8 +17,10 @@ import { ThemedTextInput } from '../../components/atoms/ThemedTextInput';
 import { ThemedView } from '../../components/atoms/ThemedView';
 import ScreenLayout from '../../components/layouts/ScreenLayout';
 
+const INITIAL_VALUES: TSignUpForm = { nome: '', email: '', senha: '', confirmar_senha: '' };
+
 const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
-	const [ values, setValues ] = useState({ nome: '', email: '', senha: '' });
+	const [ values, setValues ] = useState<TSignUpForm>(INITIAL_VALUES);
 	const { mutate: signUpMutation, isPending: is_sign_up_pending } = useSignUp();
 
 	const onChange = (key: string, value: string) => {
@@ -25,6 +28,15 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 	};
 
 	const onSubmit = () => {
+		if (values.senha !== values.confirmar_senha) {
+			Toast.show({
+				type: 'error',
+				text1: 'Erro ao cadastrar usuário',
+				text2: 'As senhas não coincidem',
+			});
+			return;
+		}
+
 		const body: TSignUpBody = {
 			nome: values.nome,
 			email: values.email,
@@ -33,18 +45,18 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 
 		signUpMutation({
 			body,
-			onSuccess: (data) => {
+			onSuccess: () => {
 				Toast.show({
 					type: 'success',
 					text1: 'Cadastro realizado com sucesso!',
 				});
 				navigation.replace('SignIn');
 			},
-			onError: (err) => {
+			onError: () => {
 				Toast.show({
 					type: 'error',
 					text1: 'Erro ao cadastrar usuário',
-					text2: err?.message,
+					text2: 'Verifique os campos e tente novamente',
 				});
 			},
 		});
@@ -63,6 +75,16 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 					onChangeText={(value) => onChange('email', value)}
 					editable={!is_sign_up_pending}
 				/>
+
+				<ThemedTextInput
+					style={styles.input}
+					placeholder='Nome'
+					placeholderTextColor='#666'
+					value={values.nome}
+					onChangeText={(value) => onChange('nome', value)}
+					editable={!is_sign_up_pending}
+				/>
+
 				<ThemedTextInput
 					style={styles.input}
 					placeholder='Senha'
@@ -73,12 +95,24 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 					onChangeText={(value) => onChange('senha', value)}
 					editable={!is_sign_up_pending}
 				/>
+
+				<ThemedTextInput
+					style={styles.input}
+					placeholder='Confirmar senha'
+					placeholderTextColor='#666'
+					secureTextEntry
+					autoComplete='password'
+					value={values.confirmar_senha}
+					onChangeText={(value) => onChange('confirmar_senha', value)}
+					editable={!is_sign_up_pending}
+				/>
+
 				<TouchableOpacity
 					style={[ styles.button, is_sign_up_pending && styles.buttonDisabled ]}
 					onPress={onSubmit}
 					disabled={is_sign_up_pending}
 				>
-					{is_sign_up_pending ? <Loader /> : <ThemedText style={styles.buttonText}>Entrar</ThemedText>}
+					{is_sign_up_pending ? <Loader /> : <ThemedText style={styles.buttonText}>Cadastrar</ThemedText>}
 				</TouchableOpacity>
 
 				<TouchableOpacity
