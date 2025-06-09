@@ -1,16 +1,21 @@
 import React from 'react';
 import { TextInput, TextInputProps, StyleSheet } from 'react-native';
 import { useTheme } from '../../../hooks/useTheme';
+import { ThemedView } from '../ThemedView';
+import { ThemedText } from '../ThemedText';
 
 interface ThemedTextInputProps extends TextInputProps {
   error?: string;
+  label?: string;
 }
 
-export const ThemedTextInput = ({ style, error, ...props }: ThemedTextInputProps) => {
+export const ThemedTextInput = ({ style, error, label, ...props }: ThemedTextInputProps) => {
   const { colors } = useTheme();
 
   return (
-    <TextInput
+    <ThemedView style={styles.container}>
+      {label && <ThemedText>{label}</ThemedText>}
+      <TextInput
       style={[
         styles.input,
         {
@@ -23,10 +28,14 @@ export const ThemedTextInput = ({ style, error, ...props }: ThemedTextInputProps
       placeholderTextColor={colors.placeholder}
       {...props}
     />
+    </ThemedView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    gap: 5,
+  },
   input: {
     height: 50,
     borderWidth: 1,

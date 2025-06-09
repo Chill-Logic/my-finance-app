@@ -3,8 +3,7 @@ import { Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
 import { ThemedTextInput } from '../../atoms/ThemedTextInput';
-// @ts-ignore
-import { Picker } from '@react-native-picker/picker';
+
 import { TNewTransactionForm } from '../../../types/forms';
 import { TTransaction } from '../../../types/models';
 import { useCreateTransactions } from '../../../hooks/api/transactions/useCreateTransactions';
@@ -12,6 +11,7 @@ import { Loader } from '../../atoms/Loader';
 import { formatMoney, unformatMoney } from '../../../utils/formatMoney';
 import Toast from 'react-native-toast-message';
 import { useUpdateTransactions } from '../../../hooks/api/transactions/useUpdateTransactions';
+import SelectInput from '../../atoms/SelectInput';
 
 interface TransactionModalProps {
   visible: boolean;
@@ -24,19 +24,21 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 
   const { mutate: createTransactionMutation, isPending: is_create_transaction_pending } = useCreateTransactions();
   const { mutate: updateTransactionMutation, isPending: is_update_transaction_pending } = useUpdateTransactions();
-  const [form, setForm] = useState<TNewTransactionForm>({
+  const [ values, setValues ] = useState<TNewTransactionForm>({
     type: 'deposit',
     description: '',
     value: '',
   });
 
   const handleSave = () => {
+    const value = Number(unformatMoney(values.value)) / 100;
+
     if(transaction){
       updateTransactionMutation({
         body: {
-          type: form.type,
-          description: form.description,
-          value: Number(unformatMoney(form.value)) / 100,
+          type: values.type,
+          description: values.description,
+          value,
         },
         id: transaction.transactionID,
         onSuccess: () => {
@@ -59,9 +61,9 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
     } else {
       createTransactionMutation({
         body: {
-          type: form.type,
-          description: form.description,
-          value: Number(unformatMoney(form.value)) / 100,
+          type: values.type,
+          description: values.description,
+          value,
         },
         onSuccess: () => {
           Toast.show({
@@ -82,25 +84,27 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
     }
   };
 
-  const is_submit_disabled = is_create_transaction_pending  || is_update_transaction_pending || !form.value || !form.description || !form.type;
+  const is_submit_disabled = is_create_transaction_pending  || is_update_transaction_pending || !values.value || !values.description || !values.type;
+
+  const handleClose = () => {
+    setValues({
+      type: 'deposit',
+      description: '',
+      value: '',
+    });
+    onClose();
+  };
 
   useEffect(() => {
     if (transaction) {
-      setForm({
+      setValues({
         type: transaction.type,
         description: transaction.description,
-        value: formatMoney(transaction.value.toString()),
+        value: formatMoney((transaction.value * 100).toString()),
       });
     }
   }, [transaction]);
-const handleClose = () => {
-  setForm({
-    type: 'deposit',
-    description: '',
-    value: '',
-  });
-  onClose();
-};
+
   return (
     <Modal
       visible={visible}
@@ -113,35 +117,32 @@ const handleClose = () => {
           <ThemedText style={styles.title}>{transaction ? `Editar ${transaction.type === 'deposit' ? 'Entrada' : 'Saída'}` : 'Nova Transação'}</ThemedText>
 
           <ThemedView style={styles.formGroup}>
-            <ThemedText>Tipo</ThemedText>
-            <ThemedView style={styles.pickerContainer}>
-              <Picker
-                selectedValue={form.type}
-                onValueChange={(value: TTransaction['type']) => setForm({ ...form, type: value })}
-                style={styles.picker}
-              >
-                <Picker.Item label="Entrada" value="deposit" />
-                <Picker.Item label="Saída" value="spent" />
-              </Picker>
-            </ThemedView>
+            <SelectInput
+              label="Tipo"
+              options={[
+                { label: 'Entrada', value: 'deposit' },
+                { label: 'Saída', value: 'spent' }]}
+              value={values.type}
+              onChange={(value) => setValues({ ...values, type: value as TTransaction['type'] })}
+            />
           </ThemedView>
 
           <ThemedView style={styles.formGroup}>
-            <ThemedText>Descrição</ThemedText>
             <ThemedTextInput
-              value={form.description}
-              onChangeText={(text) => setForm({ ...form, description: text })}
+              label="Descrição"
+              value={values.description}
+              onChangeText={(text) => setValues({ ...values, description: text })}
               placeholder="Digite a descrição"
             />
           </ThemedView>
 
           <ThemedView style={styles.formGroup}>
-            <ThemedText>Valor</ThemedText>
             <ThemedTextInput
-              value={form.value}
+              label="Valor"
+              value={values.value}
               onChangeText={(text) => {
                 const formattedValue = formatMoney(text);
-                setForm({ ...form, value: formattedValue });
+                setValues({ ...values, value: formattedValue });
               }}
               placeholder="R$ 0,00"
               keyboardType="numeric"

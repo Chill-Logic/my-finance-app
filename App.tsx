@@ -22,7 +22,6 @@ function App(): React.JSX.Element {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Toast />
       <CurrentUserProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="SignIn" screenOptions={{ headerShown: false }}>
@@ -30,6 +29,7 @@ function App(): React.JSX.Element {
             <Stack.Screen name="Home" component={HomeScreen} />
           </Stack.Navigator>
         </NavigationContainer>
+      <Toast />
       </CurrentUserProvider>
     </QueryClientProvider>
   );

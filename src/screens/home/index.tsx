@@ -21,7 +21,6 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-
   const handleLogout = () => {
     LocalStorage.deleteItem(StorageKeys.TOKEN);
     setCurrentUser({ data: null });
