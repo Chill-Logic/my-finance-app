@@ -15,7 +15,7 @@ import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedView } from '../../components/atoms/ThemedView';
 import ScreenLayout from '../../components/layouts/ScreenLayout';
 import { TransactionFormModal } from '../../components/organisms/TransactionFormModal';
-import TransactionsList from '../../components/organisms/TransactionsList';
+import TransactionsList from '../../components/organisms/TransactionList';
 
 const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 	const { current_user, setCurrentUser } = useCurrentUserContext();

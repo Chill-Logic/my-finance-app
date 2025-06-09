@@ -1,14 +1,15 @@
 import { Fragment } from 'react';
 import { Alert, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { useDeleteTransactions } from '../../hooks/api/transactions/useDeleteTransactions';
+import { useDeleteTransactions } from '../../../hooks/api/transactions/useDeleteTransactions';
 
-import { TListTransactionsResponse } from '../../types/api';
-import { TTransaction } from '../../types/models';
+import { TListTransactionsResponse } from '../../../types/api';
+import { TTransaction } from '../../../types/models';
 
-import { ThemedText } from '../atoms/ThemedText';
-import { ThemedView } from '../atoms/ThemedView';
+import { ThemedText } from '../../atoms/ThemedText';
+import { ThemedView } from '../../atoms/ThemedView';
 
 type TTransactionsListProps = {
 	data_transactions?: TListTransactionsResponse;
@@ -20,7 +21,7 @@ const TransactionsList = (props: TTransactionsListProps) => {
 
 	const { mutate: deleteTransaction } = useDeleteTransactions();
 
-	const handleDeleteTransaction = (id: string) => {
+	const handleDeleteTransaction = (transaction: TTransaction) => {
 		Alert.alert(
 			'Excluir Transação',
 			'Deseja excluir esta transação?',
@@ -31,7 +32,25 @@ const TransactionsList = (props: TTransactionsListProps) => {
 				},
 				{
 					text: 'Excluir',
-					onPress: () => deleteTransaction({ id }),
+					onPress: () => {
+						deleteTransaction({
+							id: transaction.transactionID,
+							onSuccess: () => {
+								Toast.show({
+									type: 'success',
+									text1: 'Transação excluída com sucesso',
+									text2: `A transação ${ transaction.description } foi excluída com sucesso`,
+								});
+							},
+							onError: () => {
+								Toast.show({
+									type: 'error',
+									text1: 'Erro ao excluir transação',
+									text2: `Não foi possível excluir a transação ${ transaction.description }`,
+								});
+							},
+						});
+					},
 				},
 			],
 		);
@@ -69,7 +88,7 @@ const TransactionsList = (props: TTransactionsListProps) => {
 									]}>
 										{formatValue(transaction.value)}
 									</ThemedText>
-									<TouchableOpacity onPress={() => handleDeleteTransaction(transaction.transactionID)}>
+									<TouchableOpacity onPress={() => handleDeleteTransaction(transaction)}>
 										<Icon name='delete' size={16} color='#900' />
 									</TouchableOpacity>
 								</ThemedView>
