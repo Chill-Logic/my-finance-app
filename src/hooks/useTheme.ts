@@ -1,38 +1,38 @@
 import { useColorScheme } from 'react-native';
 
 interface ThemeColors {
-  text: string;
-  background: string;
-  border: string;
-  placeholder: string;
-  error: string;
+	text: string;
+	background: string;
+	border: string;
+	placeholder: string;
+	error: string;
 }
 
 interface Theme {
-  colors: ThemeColors;
+	colors: ThemeColors;
 }
 
 const lightTheme: Theme = {
-  colors: {
-    text: '#000000',
-    background: '#FFFFFF',
-    border: '#CCCCCC',
-    placeholder: '#999999',
-    error: '#FF0000',
-  },
+	colors: {
+		text: '#000000',
+		background: '#FFFFFF',
+		border: '#CCCCCC',
+		placeholder: '#999999',
+		error: '#FF0000',
+	},
 };
 
 const darkTheme: Theme = {
-  colors: {
-    text: '#FFFFFF',
-    background: '#121212',
-    border: '#333333',
-    placeholder: '#666666',
-    error: '#FF4444',
-  },
+	colors: {
+		text: '#FFFFFF',
+		background: '#121212',
+		border: '#333333',
+		placeholder: '#666666',
+		error: '#FF4444',
+	},
 };
 
 export const useTheme = (): Theme => {
-  const colorScheme = useColorScheme();
-  return colorScheme === 'dark' ? darkTheme : lightTheme;
+	const colorScheme = useColorScheme();
+	return colorScheme === 'dark' ? darkTheme : lightTheme;
 };

@@ -1,9 +1,9 @@
 import { createContext, Dispatch, useContext, useState, SetStateAction } from 'react';
+
 import { TUser } from '../types/models';
 
-
 export type TCurrentUserState = {
-	data: TUser | null
+	data: TUser | null;
 }
 
 interface ContextType {
@@ -22,9 +22,8 @@ const CurrentUserContext = createContext(initialValue);
 
 export const CurrentUserProvider = ({ children }: { children: React.ReactNode }) => {
 	const [ current_user, setCurrentUser ] = useState<TCurrentUserState>({
-      data: null,
+		data: null,
 	});
-
 
 	return (
 		<CurrentUserContext.Provider
@@ -32,7 +31,7 @@ export const CurrentUserProvider = ({ children }: { children: React.ReactNode })
 				current_user,
 				setCurrentUser,
 			}}
-    >
+		>
 			{children}
 		</CurrentUserContext.Provider>
 	);
