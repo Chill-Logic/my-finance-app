@@ -122,7 +122,6 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 					<ThemedView style={styles.formGroup}>
 						<SelectInput
 							label='Tipo'
-							disabled={Boolean(transaction)}
 							options={[
 								{ label: 'Entrada', value: 'deposit' },
 								{ label: 'Saída', value: 'spent' } ]}
