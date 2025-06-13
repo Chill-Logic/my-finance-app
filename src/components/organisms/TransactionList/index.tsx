@@ -1,9 +1,11 @@
 import { Fragment } from 'react';
-import { Alert, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { useDeleteTransactions } from '../../../hooks/api/transactions/useDeleteTransactions';
+
+import { useRefresh } from '../../../context/refresh';
 
 import { TListTransactionsResponse } from '../../../types/api';
 import { TTransaction } from '../../../types/models';
@@ -18,6 +20,7 @@ type TTransactionsListProps = {
 
 const TransactionsList = (props: TTransactionsListProps) => {
 	const { data_transactions, onClickTransaction } = props;
+	const { refreshControlProps } = useRefresh();
 
 	const { mutate: deleteTransaction } = useDeleteTransactions();
 
@@ -72,7 +75,10 @@ const TransactionsList = (props: TTransactionsListProps) => {
 		<Fragment>
 			{data_transactions?.transactions && data_transactions?.transactions.length > 0 ? (
 				<Fragment>
-					<ScrollView style={styles.transactionsList}>
+					<ScrollView
+						style={styles.transactionsList}
+						refreshControl={<RefreshControl {...refreshControlProps} />}
+					>
 						{data_transactions.transactions.map((transaction) => (
 							<TouchableOpacity key={transaction.transactionID} style={styles.transactionItem} onPress={() => onClickTransaction(transaction)}>
 								<ThemedView>

@@ -4,6 +4,7 @@ import Toast from 'react-native-toast-message';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import CurrentUserProvider from './src/context/current_user';
+import RefreshProvider from './src/context/refresh';
 import { ThemeProvider } from './src/context/theme';
 
 import MainStack from './src/navigation';
@@ -22,8 +23,10 @@ function App(): React.JSX.Element {
 		<QueryClientProvider client={queryClient}>
 			<ThemeProvider>
 				<CurrentUserProvider>
-					<MainStack />
-					<Toast />
+					<RefreshProvider>
+						<MainStack />
+						<Toast />
+					</RefreshProvider>
 				</CurrentUserProvider>
 			</ThemeProvider>
 		</QueryClientProvider>
