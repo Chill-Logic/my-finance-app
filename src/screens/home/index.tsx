@@ -26,8 +26,8 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
 
 	const [ transaction, setTransaction ] = useState<TTransaction | null>(null);
-	const [ isModalVisible, setIsModalVisible ] = useState(false);
-	const [ isSettingsModalVisible, setIsSettingsModalVisible ] = useState(false);
+	const [ is_modal_visible, setIsModalVisible ] = useState(false);
+	const [ is_settings_modal_visible, setIsSettingsModalVisible ] = useState(false);
 
 	const handleLogout = () => {
 		LocalStorage.logout().then(() => {
@@ -107,7 +107,7 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 				</ThemedView>
 
 				<TransactionFormModal
-					visible={isModalVisible}
+					visible={is_modal_visible}
 					onClose={() => {
 						setIsModalVisible(false);
 						setTransaction(null);
@@ -116,7 +116,7 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 				/>
 
 				<SettingsModal
-					visible={isSettingsModalVisible}
+					visible={is_settings_modal_visible}
 					onClose={() => setIsSettingsModalVisible(false)}
 				/>
 			</ThemedView>
