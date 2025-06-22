@@ -10,7 +10,7 @@ const useShowCurrentUser = () => {
 		queryKey: [ QUERY_KEYS.user.get_current ],
 		queryFn: async() => {
 			const axios = await getAxiosInstance();
-			const response = await axios.get<TUser>('/user');
+			const response = await axios.get<TUser>('/users/me');
 			return response.data;
 		},
 	});

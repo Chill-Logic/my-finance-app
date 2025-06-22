@@ -12,7 +12,7 @@ export const useSignIn = () => {
 	return useMutation({
 		mutationFn: async({ body }: TMutationParams<TSignInResponse, TSignInBody>) => {
 			const axios = await getAxiosInstance();
-			const response = await axios.post<TSignInResponse>('/auth/signin', body);
+			const response = await axios.post<TSignInResponse>('/auth/sign-in', body);
 			return response.data;
 		},
 		onSuccess: (data, { onSuccess }) => {

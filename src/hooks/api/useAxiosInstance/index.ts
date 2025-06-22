@@ -5,7 +5,6 @@ import { LocalStorage } from '../../../services/storage';
 
 export const getAxiosInstance = async() => {
 	const token = await LocalStorage.getItem('token');
-
 	const axiosInstance = axios.create({
 		baseURL: API_URL,
 		headers: {
