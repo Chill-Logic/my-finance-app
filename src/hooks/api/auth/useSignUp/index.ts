@@ -12,7 +12,7 @@ export const useSignUp = () => {
 	return useMutation({
 		mutationFn: async({ body }: TMutationParams<TSignUpResponse, TSignUpBody>) => {
 			const axios = await getAxiosInstance();
-			const response = await axios.post<TSignUpResponse>('/sign-up', body);
+			const response = await axios.post<TSignUpResponse>('/auth/signup', body);
 			return response.data;
 		},
 		onSuccess: (data, { onSuccess }) => {

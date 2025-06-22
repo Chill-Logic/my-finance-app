@@ -15,7 +15,7 @@ export type TListTransactionsResponse = {
 
 export type TSignInBody = {
 	email: string;
-	senha: string;
+	password: string;
 };
 
 export type TMutationParams<TResponse, TBody, TComplements = {}> = {
@@ -26,7 +26,7 @@ export type TMutationParams<TResponse, TBody, TComplements = {}> = {
 } & TComplements;
 
 export type TSignUpBody = {
-	nome: string;
+	name: string;
 	email: string;
-	senha: string;
+	password: string;
 }

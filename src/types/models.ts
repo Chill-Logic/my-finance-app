@@ -1,7 +1,12 @@
-export type TUser = {
-	nome: string;
+type TModelFields = {
+	id: string;
+	created_at: string;
+	updated_at: string;
+};
+
+export type TUser = TModelFields & {
+	name: string;
 	email: string;
-	_id: string;
 };
 
 export type TTransaction = {

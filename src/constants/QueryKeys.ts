@@ -7,4 +7,7 @@ export const QUERY_KEYS = {
 	[MODELS.transaction]: {
 		get_all: 'get-all-transactions',
 	},
+	[MODELS.USER]: {
+		get_current: 'get-current-user',
+	},
 };

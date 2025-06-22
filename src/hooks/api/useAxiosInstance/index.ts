@@ -8,6 +8,9 @@ export const getAxiosInstance = async() => {
 
 	const axiosInstance = axios.create({
 		baseURL: API_URL,
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+		},
 	});
 
 	if (token) {
