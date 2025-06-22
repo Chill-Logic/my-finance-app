@@ -16,7 +16,7 @@ import { IScreenProps } from '../../types/screen';
 import { StorageKeys } from '../../types/storage';
 
 import { Loader } from '../../components/atoms/Loader';
-import MyWalletLogo from '../../components/atoms/Logo';
+import Logo from '../../components/atoms/Logo';
 import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedTextInput } from '../../components/atoms/ThemedTextInput';
 import { ThemedView } from '../../components/atoms/ThemedView';
@@ -25,7 +25,7 @@ import ScreenLayout from '../../components/layouts/ScreenLayout';
 const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 	const { setCurrentUser } = useCurrentUserContext();
 
-	const [ form, setForm ] = useState({ email: '', senha: '' });
+	const [ form, setForm ] = useState({ email: '', password: '' });
 	const [ keep_logged_in, setKeepLoggedIn ] = useState(false);
 	const { mutate: signInMutation, isPending: is_sign_in_pending } = useSignIn();
 
@@ -36,22 +36,19 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 	const onSubmit = () => {
 		const body = {
 			email: form.email,
-			senha: form.senha,
+			password: form.password,
 		};
 
 		signInMutation({
 			body,
-			onSuccess: (data) => {
-				LocalStorage.setItem(StorageKeys.TOKEN, data.token);
+			onSuccess: async(sign_in_response) => {
+				LocalStorage.setItem(StorageKeys.TOKEN, sign_in_response.token);
 				if (keep_logged_in) {
 					LocalStorage.setItem(StorageKeys.KEEP_LOGGED_IN, 'true');
-					LocalStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(data));
 				}
-				setCurrentUser({ data });
 				navigation.replace('Home');
 			},
-			onError: (err) => {
-				console.log('err :>> ', err);
+			onError: () => {
 				Alert.alert('Erro', 'E-mail ou senha inválidos');
 			},
 		});
@@ -59,7 +56,7 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 
 	useEffect(() => {
 		(async() => {
-			const keep_logged_in_value	 = await LocalStorage.getItem(StorageKeys.KEEP_LOGGED_IN);
+			const keep_logged_in_value = await LocalStorage.getItem(StorageKeys.KEEP_LOGGED_IN);
 			const user_data = await LocalStorage.getItem(StorageKeys.USER_DATA);
 
 			if (keep_logged_in_value && user_data) {
@@ -73,7 +70,7 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 		<ScreenLayout>
 			<ThemedView style={styles.formContainer}>
 				<ThemedView style={styles.logoContainer}>
-					<MyWalletLogo />
+					<Logo />
 				</ThemedView>
 
 				<ThemedTextInput
@@ -92,8 +89,8 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 					placeholderTextColor='#666'
 					secureTextEntry
 					autoComplete='password'
-					value={form.senha}
-					onChangeText={(value) => onChange('senha', value)}
+					value={form.password}
+					onChangeText={(value) => onChange('password', value)}
 					editable={!is_sign_in_pending}
 				/>
 				<TouchableOpacity

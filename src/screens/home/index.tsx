@@ -1,14 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { useListTransactions } from '../../hooks/api/transactions/useListTransactions';
+import useShowCurrentUser from '../../hooks/api/user/useShowCurrentUser';
 
 import { useCurrentUserContext } from '../../context/current_user';
 import { LocalStorage } from '../../services/storage';
 
 import { TTransaction } from '../../types/models';
 import { IScreenProps } from '../../types/screen';
+import { StorageKeys } from '../../types/storage';
 
 import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedView } from '../../components/atoms/ThemedView';
@@ -19,11 +21,13 @@ import TransactionsList from '../../components/organisms/TransactionList';
 
 const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 	const { current_user, setCurrentUser } = useCurrentUserContext();
+
+	const { data: current_user_data, isLoading: is_current_user_loading } = useShowCurrentUser();
 	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
 
 	const [ transaction, setTransaction ] = useState<TTransaction | null>(null);
-	const [ isModalVisible, setIsModalVisible ] = useState(false);
-	const [ isSettingsModalVisible, setIsSettingsModalVisible ] = useState(false);
+	const [ is_modal_visible, setIsModalVisible ] = useState(false);
+	const [ is_settings_modal_visible, setIsSettingsModalVisible ] = useState(false);
 
 	const handleLogout = () => {
 		LocalStorage.logout().then(() => {
@@ -32,11 +36,26 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 		});
 	};
 
+	const is_loading = is_current_user_loading || is_data_transactions_loading;
+
+	useEffect(() => {
+		(async() => {
+			const keep_logged_in = await LocalStorage.getItem(StorageKeys.KEEP_LOGGED_IN);
+
+			if (current_user_data && !current_user.data) {
+				if (keep_logged_in === 'true') {
+					LocalStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(current_user_data));
+				}
+				setCurrentUser({ data: current_user_data });
+			}
+		})();
+	}, [ current_user_data, current_user, setCurrentUser ]);
+
 	return (
 		<ScreenLayout>
 			<ThemedView style={styles.container}>
 				<ThemedView style={styles.header}>
-					<ThemedText style={styles.title}>Olá, {current_user?.data?.nome}</ThemedText>
+					<ThemedText style={styles.title}>Olá, {current_user?.data?.name}</ThemedText>
 					<ThemedView style={styles.headerButtons}>
 						<TouchableOpacity
 							style={styles.headerButton}
@@ -56,13 +75,13 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 						data_transactions?.transactions?.length
 							? styles.transactionsContainerWithData
 							: styles.transactionsContainerEmpty,
-					]
-					}>
-					{is_data_transactions_loading && (
+					]}
+				>
+					{is_loading && (
 						<ThemedText>Carregando...</ThemedText>
 					)}
 
-					{!is_data_transactions_loading && (
+					{!is_loading && (
 						<TransactionsList
 							data_transactions={data_transactions}
 							onClickTransaction={(editable_transaction) => {
@@ -88,7 +107,7 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 				</ThemedView>
 
 				<TransactionFormModal
-					visible={isModalVisible}
+					visible={is_modal_visible}
 					onClose={() => {
 						setIsModalVisible(false);
 						setTransaction(null);
@@ -97,7 +116,7 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 				/>
 
 				<SettingsModal
-					visible={isSettingsModalVisible}
+					visible={is_settings_modal_visible}
 					onClose={() => setIsSettingsModalVisible(false)}
 				/>
 			</ThemedView>

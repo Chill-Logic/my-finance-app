@@ -12,7 +12,7 @@ import { TSignUpForm } from '../../types/forms';
 import { IScreenProps } from '../../types/screen';
 
 import { Loader } from '../../components/atoms/Loader';
-import MyWalletLogo from '../../components/atoms/Logo';
+import Logo from '../../components/atoms/Logo';
 import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedTextInput } from '../../components/atoms/ThemedTextInput';
 import { ThemedView } from '../../components/atoms/ThemedView';
@@ -39,9 +39,9 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 		}
 
 		const body: TSignUpBody = {
-			nome: values.nome,
+			name: values.nome,
 			email: values.email,
-			senha: values.senha,
+			password: values.senha,
 		};
 
 		signUpMutation({
@@ -53,7 +53,7 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 				});
 				navigation.replace('SignIn');
 			},
-			onError: () => {
+			onError: (e) => {
 				Toast.show({
 					type: 'error',
 					text1: 'Erro ao cadastrar usuário',
@@ -67,7 +67,7 @@ const SignUpScreen = ({ navigation }: IScreenProps<'SignUp'>) => {
 		<ScreenLayout>
 			<ThemedView style={styles.formContainer}>
 				<ThemedView style={styles.logoContainer}>
-					<MyWalletLogo />
+					<Logo />
 				</ThemedView>
 				<ThemedTextInput
 					style={styles.input}

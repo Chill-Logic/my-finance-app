@@ -2,10 +2,10 @@ import { StyleSheet } from 'react-native';
 
 import { ThemedText } from '../ThemedText';
 
-const MyWalletLogo = () => {
+const Logo = () => {
 	return (
 		<ThemedText style={styles.logo}>
-      MyWallet
+      MyFinance
 		</ThemedText>
 	);
 };
@@ -19,4 +19,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default MyWalletLogo;
+export default Logo;
