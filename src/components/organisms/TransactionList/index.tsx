@@ -14,6 +14,8 @@ import { TTransaction } from '../../../types/models';
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
 
+import { QUERY_KEYS } from '../../../constants/QueryKeys';
+
 type TTransactionsListProps = {
 	data_transactions?: TListTransactionsResponse;
 	onClickTransaction: (transaction: TTransaction)=> void;
@@ -21,7 +23,9 @@ type TTransactionsListProps = {
 
 const TransactionsList = (props: TTransactionsListProps) => {
 	const { data_transactions, onClickTransaction } = props;
-	const { refreshControlProps } = useRefresh();
+	const { refreshControlProps } = useRefresh({
+		keys: [ QUERY_KEYS.transaction.get_all ],
+	});
 
 	const { mutate: deleteTransaction } = useDeleteTransactions();
 

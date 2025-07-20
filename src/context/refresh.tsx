@@ -4,61 +4,66 @@ import { RefreshControlProps } from 'react-native';
 import { queryClient } from '../../App';
 import { useCurrentUserContext } from './current_user';
 
-interface RefreshContextData {
-	isRefreshing: boolean;
-	refresh: (queryKeys?: string[])=> Promise<void>;
-	refreshControlProps: RefreshControlProps;
+type RefreshOptions =
+	| { keys: string[]; all?: never }
+	| { keys?: never; all: boolean };
+
+function hasKeys(options: RefreshOptions): options is { keys: string[]; all?: never } {
+	return 'keys' in options;
 }
 
-const RefreshContext = createContext<RefreshContextData>({} as RefreshContextData);
+const RefreshContext = createContext<{}>({});
 
 export const RefreshProvider = ({ children }: { children: React.ReactNode }) => {
-	const [ isRefreshing, setIsRefreshing ] = useState(false);
-	const { current_user } = useCurrentUserContext();
+	return (
+		<RefreshContext.Provider value={{}}>
+			{children}
+		</RefreshContext.Provider>
+	);
+};
 
-	const refresh = useCallback(async(queryKeys?: string[]) => {
+export const useRefresh = (options: RefreshOptions) => {
+	const context = useContext(RefreshContext);
+	if (!context) {
+		throw new Error('useRefresh deve ser usado dentro de um RefreshProvider');
+	}
+
+	const { current_user } = useCurrentUserContext();
+	const [ isRefreshing, setIsRefreshing ] = useState(false);
+
+	const refresh = useCallback(async() => {
 		if (!current_user.data) {return;}
 
 		setIsRefreshing(true);
 		try {
-			if (queryKeys && queryKeys.length > 0) {
+			if (hasKeys(options)) {
 				await Promise.all(
-					queryKeys.map(key => queryClient.invalidateQueries({ queryKey: [ key ] })),
+					options.keys.map(key => queryClient.invalidateQueries({ queryKey: [ key ] })),
 				);
-			} else {
+			} else if ('all' in options) {
 				await queryClient.clear();
+			} else {
+				throw new Error('É necessário fornecer "keys" ou "all" como opção');
 			}
 		} catch (error) {
 			console.error('Erro ao atualizar dados:', error);
 		} finally {
 			setIsRefreshing(false);
 		}
-	}, [ current_user.data ]);
+	}, [ current_user.data, options ]);
 
 	const refreshControlProps: RefreshControlProps = {
 		refreshing: isRefreshing,
-		onRefresh: () => refresh(),
+		onRefresh: refresh,
 		colors: [ '#9Bd35A', '#689F38' ],
 		tintColor: '#689F38',
 	};
 
-	return (
-		<RefreshContext.Provider value={{
-			isRefreshing,
-			refresh,
-			refreshControlProps,
-		}}>
-			{children}
-		</RefreshContext.Provider>
-	);
-};
-
-export const useRefresh = () => {
-	const context = useContext(RefreshContext);
-	if (!context) {
-		throw new Error('useRefresh deve ser usado dentro de um RefreshProvider');
-	}
-	return context;
+	return {
+		isRefreshing,
+		refresh,
+		refreshControlProps,
+	};
 };
 
 export default RefreshProvider;
