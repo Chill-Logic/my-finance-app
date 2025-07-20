@@ -7,7 +7,6 @@ type TModelFields = {
 	discarded_at: string | null;
 };
 
-// Função utilitária para melhorar a DX
 type WithModelFields<T> = TModelFields & T;
 
 export type TUser = WithModelFields<{
