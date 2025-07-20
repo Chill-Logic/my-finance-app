@@ -1,4 +1,5 @@
 import React from 'react';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
@@ -22,21 +23,31 @@ export const queryClient = new QueryClient({
 
 function App(): React.JSX.Element {
 	return (
-		<SafeAreaProvider>
-			<QueryClientProvider client={queryClient}>
-				<ThemeProvider>
-					<CurrentUserProvider>
-						<RefreshProvider>
-							<WalletUserProvider>
-								<MainStack />
-								<Toast />
-							</WalletUserProvider>
-						</RefreshProvider>
-					</CurrentUserProvider>
-				</ThemeProvider>
-			</QueryClientProvider>
-		</SafeAreaProvider>
+		<View style={styles.root}>
+			<SafeAreaProvider>
+				<StatusBar backgroundColor='#121212' barStyle='light-content' />
+				<QueryClientProvider client={queryClient}>
+					<ThemeProvider>
+						<CurrentUserProvider>
+							<RefreshProvider>
+								<WalletUserProvider>
+									<MainStack />
+									<Toast />
+								</WalletUserProvider>
+							</RefreshProvider>
+						</CurrentUserProvider>
+					</ThemeProvider>
+				</QueryClientProvider>
+			</SafeAreaProvider>
+		</View>
 	);
 }
+
+const styles = StyleSheet.create({
+	root: {
+		flex: 1,
+		backgroundColor: '#121212',
+	},
+});
 
 export default App;
