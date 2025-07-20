@@ -4,6 +4,7 @@ export type TNewTransactionForm = {
 	kind: TTransaction['kind'];
 	description: string;
 	value: string;
+	transaction_date: string;
 };
 
 export type TSignUpForm = {

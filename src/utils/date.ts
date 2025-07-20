@@ -30,6 +30,19 @@ export const DateUtils = {
 
 		return moment_date.format('DD/MM/YYYY');
 	},
+	formatDateInput: (text: string) => {
+		const numbers = text.replace(/\D/g, '');
+
+		if (numbers.length <= 2) {
+			return numbers;
+		} else if (numbers.length <= 4) {
+			return `${ numbers.slice(0, 2) }/${ numbers.slice(2) }`;
+		} else if (numbers.length <= 8) {
+			return `${ numbers.slice(0, 2) }/${ numbers.slice(2, 4) }/${ numbers.slice(4, 8) }`;
+		} else {
+			return `${ numbers.slice(0, 2) }/${ numbers.slice(2, 4) }/${ numbers.slice(4, 8) }`;
+		}
+	},
 	formatDateTime: (date: string | Date) => {
 		const moment_date = isDateValid(date);
 		if (!moment_date) {

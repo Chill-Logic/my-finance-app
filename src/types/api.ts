@@ -31,3 +31,13 @@ export type TListTransactionsResponse = {
 	total: number;
 	transactions: TTransaction[];
 };
+
+export type TCreateTransactionBody = {
+	description: string;
+	value: number;
+	kind: TTransaction['kind'];
+	wallet_id: string;
+	transaction_date: string;
+}
+
+export type TUpdateTransactionBody = Partial<Omit<TCreateTransactionBody, 'wallet_id'>>

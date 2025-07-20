@@ -10,7 +10,7 @@ import CheckBox from '@react-native-community/checkbox';
 import { useSignIn } from '../../hooks/api/auth/useSignIn';
 
 import { useCurrentUserContext } from '../../context/current_user';
-import { useWalletUserContext } from '../../context/wallet';
+import { useWallet } from '../../context/wallet';
 import { LocalStorage } from '../../services/storage';
 
 import { IScreenProps } from '../../types/screen';
@@ -25,7 +25,7 @@ import ScreenLayout from '../../components/layouts/ScreenLayout';
 
 const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 	const { setCurrentUser } = useCurrentUserContext();
-	const { setCanSearchForWallets } = useWalletUserContext();
+	const { setCanSearchForWallets } = useWallet();
 
 	const [ form, setForm ] = useState({ email: '', password: '' });
 	const [ keep_logged_in, setKeepLoggedIn ] = useState(false);

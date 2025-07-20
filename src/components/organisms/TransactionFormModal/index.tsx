@@ -5,6 +5,8 @@ import Toast from 'react-native-toast-message';
 import { useCreateTransactions } from '../../../hooks/api/transactions/useCreateTransactions';
 import { useUpdateTransactions } from '../../../hooks/api/transactions/useUpdateTransactions';
 
+import { useWallet } from '../../../context/wallet';
+import { DateUtils } from '../../../utils/date';
 import { MoneyUtils } from '../../../utils/money';
 
 import { TNewTransactionForm } from '../../../types/forms';
@@ -22,34 +24,35 @@ interface TransactionModalProps {
 	transaction?: TTransaction | null;
 }
 
+const DEFAULT_VALUES: TNewTransactionForm = {
+	kind: 'deposit',
+	description: '',
+	value: '',
+	transaction_date: DateUtils.formatDate(new Date().toISOString()),
+};
+
 export const TransactionFormModal = (props: TransactionModalProps) => {
 	const { visible, onClose, transaction } = props;
+	const { user_wallet } = useWallet();
 
 	const { mutate: createTransactionMutation, isPending: is_create_transaction_pending } = useCreateTransactions();
 	const { mutate: updateTransactionMutation, isPending: is_update_transaction_pending } = useUpdateTransactions();
-	const [ values, setValues ] = useState<TNewTransactionForm>({
-		kind: 'deposit',
-		description: '',
-		value: '',
-	});
+	const [ values, setValues ] = useState<TNewTransactionForm>(DEFAULT_VALUES);
 
 	const handleClose = () => {
-		setValues({
-			kind: 'deposit',
-			description: '',
-			value: '',
-		});
+		setValues(DEFAULT_VALUES);
 		onClose();
 	};
 
 	const handleSave = () => {
-		const value = Number(MoneyUtils.unformatMoney(values.value)) / 100;
+		const value = Number(MoneyUtils.unformatMoney(values.value));
 
 		if(transaction){
 			updateTransactionMutation({
 				body: {
 					kind: values.kind,
 					description: values.description,
+					transaction_date: DateUtils.formatDateToISO(values.transaction_date),
 					value,
 				},
 				id: transaction.id,
@@ -71,11 +74,22 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 			});
 
 		} else {
+			if (!user_wallet.data) {
+				Toast.show({
+					type: 'error',
+					text1: 'Erro ao criar transação! Selecione uma carteira para continuar',
+					text2: 'Ocorreu um erro ao criar a transação',
+				});
+				return;
+			}
+
 			createTransactionMutation({
 				body: {
 					kind: values.kind,
 					description: values.description,
 					value,
+					transaction_date: DateUtils.formatDateToISO(values.transaction_date),
+					wallet_id: user_wallet.data?.id,
 				},
 				onSuccess: () => {
 					Toast.show({
@@ -102,7 +116,7 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 		!values.value ||
 		!values.description ||
 		!values.kind ||
-		!transaction?.id
+		!values.transaction_date
 	);
 
 	useEffect(() => {
@@ -110,7 +124,8 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 			setValues({
 				kind: transaction.kind,
 				description: transaction.description,
-				value: MoneyUtils.formatMoney((transaction.value * 100).toString()),
+				value: MoneyUtils.formatMoney(transaction.value),
+				transaction_date: DateUtils.formatDate(transaction.transaction_date),
 			});
 		}
 	}, [ transaction ]);
@@ -128,7 +143,7 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 
 					<ThemedView style={styles.formGroup}>
 						<SelectInput
-							label='Tipo'
+							label='Tipo *'
 							options={[
 								{ label: 'Entrada', value: 'deposit' },
 								{ label: 'Saída', value: 'spent' } ]}
@@ -139,24 +154,39 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 
 					<ThemedView style={styles.formGroup}>
 						<ThemedTextInput
-							label='Descrição'
+							label='Descrição *'
 							value={values.description}
 							onChangeText={(text) => setValues({ ...values, description: text })}
 							placeholder='Digite a descrição'
 						/>
 					</ThemedView>
 
-					<ThemedView style={styles.formGroup}>
-						<ThemedTextInput
-							label='Valor'
-							value={values.value}
-							onChangeText={(text) => {
-								const formattedValue = MoneyUtils.formatMoney(text);
-								setValues({ ...values, value: formattedValue });
-							}}
-							placeholder='R$ 0,00'
-							keyboardType='numeric'
-						/>
+					<ThemedView style={styles.formGroupDate}>
+						<ThemedView style={styles.fieldContainer}>
+							<ThemedTextInput
+								label='Valor *'
+								value={values.value}
+								onChangeText={(text) => {
+									const formattedValue = MoneyUtils.formatMoney(text);
+									setValues({ ...values, value: formattedValue });
+								}}
+								placeholder='R$ 0,00'
+								keyboardType='numeric'
+							/>
+						</ThemedView>
+
+						<ThemedView style={styles.fieldContainer}>
+							<ThemedTextInput
+								label='Data da transação *'
+								value={values.transaction_date}
+								onChangeText={(text) => {
+									const formattedDate = DateUtils.formatDateInput(text);
+									setValues({ ...values, transaction_date: formattedDate });
+								}}
+								placeholder='DD/MM/AAAA'
+								maxLength={10}
+							/>
+						</ThemedView>
 					</ThemedView>
 
 					<ThemedView style={styles.buttonContainer}>
@@ -193,6 +223,15 @@ const styles = StyleSheet.create({
 	},
 	formGroup: {
 		marginBottom: 15,
+	},
+	formGroupDate: {
+		marginBottom: 15,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		gap: 10,
+	},
+	fieldContainer: {
+		flex: 1,
 	},
 	pickerContainer: {
 		borderWidth: 1,

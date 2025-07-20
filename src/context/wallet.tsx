@@ -63,10 +63,10 @@ export const WalletUserProvider = ({ children }: { children: React.ReactNode }) 
 	);
 };
 
-export const useWalletUserContext = () => {
+export const useWallet = () => {
 	const context = useContext(WalletUserContext);
 	if (!context) {
-		throw new Error('useWalletUserContext must be used within an WalletUserProvider');
+		throw new Error('useWallet must be used within an WalletUserProvider');
 	}
 	return context;
 };
