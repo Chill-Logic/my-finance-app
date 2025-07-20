@@ -3,6 +3,8 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import { useListTransactions } from '../../hooks/api/transactions/useListTransactions';
 
+import { useWallet } from '../../context/wallet';
+
 import { TTransaction } from '../../types/models';
 import { IScreenProps } from '../../types/screen';
 
@@ -13,12 +15,15 @@ import { TransactionFormModal } from '../../components/organisms/TransactionForm
 import TransactionsList from '../../components/organisms/TransactionList';
 
 const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
-	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions();
+	const { user_wallet } = useWallet();
+	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions({
+		params: {
+			wallet_id: user_wallet.data?.id || '',
+		},
+	});
 
 	const [ transaction, setTransaction ] = useState<TTransaction | null>(null);
 	const [ is_modal_visible, setIsModalVisible ] = useState(false);
-
-	const is_loading = is_data_transactions_loading;
 
 	return (
 		<AuthenticatedLayout navigation={navigation}>
@@ -31,11 +36,11 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 							: styles.transactionsContainerEmpty,
 					]}
 				>
-					{is_loading && (
+					{is_data_transactions_loading && (
 						<ThemedText>Carregando...</ThemedText>
 					)}
 
-					{!is_loading && (
+					{!is_data_transactions_loading && (
 						<TransactionsList
 							data_transactions={data_transactions}
 							onClickTransaction={(editable_transaction) => {

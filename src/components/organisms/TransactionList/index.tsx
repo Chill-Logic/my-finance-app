@@ -24,7 +24,9 @@ type TTransactionsListProps = {
 const TransactionsList = (props: TTransactionsListProps) => {
 	const { data_transactions, onClickTransaction } = props;
 	const { refreshControlProps } = useRefresh({
-		keys: [ QUERY_KEYS.transaction.get_all ],
+		keys: [
+			QUERY_KEYS.transaction.get_all,
+		],
 	});
 
 	const { mutate: deleteTransaction } = useDeleteTransactions();
@@ -80,8 +82,8 @@ const TransactionsList = (props: TTransactionsListProps) => {
 			onPress={() => onClickTransaction(transaction)}
 		>
 			<ThemedView>
-				<ThemedText style={styles.transactionDate}>{DateUtils.formatDate(transaction.transaction_date)}</ThemedText>
 				<ThemedText style={styles.transactionDescription}>{transaction.description}</ThemedText>
+				<ThemedText style={styles.transactionDate}>{DateUtils.formatDate(transaction.transaction_date)}</ThemedText>
 			</ThemedView>
 			<ThemedView style={styles.transactionRight}>
 				<ThemedText
@@ -154,20 +156,23 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		padding: 10,
+		padding: 12,
 		borderRadius: 10,
 		backgroundColor: '#121214',
 	},
 	transactionDate: {
 		color: '#C6C6C6',
 		marginRight: 10,
+		backgroundColor: '#121214',
 	},
 	transactionDescription: {
 		fontWeight: 'bold',
+		backgroundColor: '#121214',
 	},
 	transactionRight: {
 		flexDirection: 'column',
 		alignItems: 'flex-end',
+		backgroundColor: '#121214',
 	},
 	transactionDelete: {
 		color: '#900',

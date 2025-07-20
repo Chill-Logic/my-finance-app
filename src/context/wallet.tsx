@@ -7,6 +7,8 @@ import { LocalStorage } from '../services/storage';
 import { TWallet } from '../types/models';
 import { StorageKeys } from '../types/storage';
 
+import { useCurrentUserContext } from './current_user';
+
 export type TWalletState = {
 	data: TWallet | null;
 }
@@ -28,12 +30,18 @@ const initialValue: ContextType = {
 const WalletUserContext = createContext(initialValue);
 
 export const WalletUserProvider = ({ children }: { children: React.ReactNode }) => {
+	const { current_user } = useCurrentUserContext();
 	const [ can_search_for_wallets, setCanSearchForWallets ] = useState(false);
 	const [ user_wallet, setUserWallet ] = useState<TWalletState>({
 		data: null,
 	});
 
-	const { data: main_wallet } = useGetMainWallet({ enabled: can_search_for_wallets });
+	const { data: main_wallet } = useGetMainWallet({
+		enabled: can_search_for_wallets && Boolean(current_user.data?.id),
+		params: {
+			user_id: current_user.data?.id || '',
+		},
+	});
 
 	useEffect(() => {
 		(async() => {
@@ -42,7 +50,7 @@ export const WalletUserProvider = ({ children }: { children: React.ReactNode }) 
 				setCanSearchForWallets(true);
 			}
 		})();
-	}, [ user_wallet.data ]);
+	}, [ user_wallet.data, current_user.data ]);
 
 	useEffect(() => {
 		if (main_wallet) {

@@ -29,12 +29,16 @@ function App(): React.JSX.Element {
 				<QueryClientProvider client={queryClient}>
 					<ThemeProvider>
 						<CurrentUserProvider>
-							<RefreshProvider>
-								<WalletUserProvider>
+							<WalletUserProvider>
+								<RefreshProvider>
 									<MainStack />
-									<Toast />
-								</WalletUserProvider>
-							</RefreshProvider>
+									<Toast
+										position='top'
+										topOffset={100}
+										visibilityTime={3000}
+									/>
+								</RefreshProvider>
+							</WalletUserProvider>
 						</CurrentUserProvider>
 					</ThemeProvider>
 				</QueryClientProvider>

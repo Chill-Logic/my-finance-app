@@ -28,7 +28,7 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 		(async() => {
 			const keep_logged_in = await LocalStorage.getItem(StorageKeys.KEEP_LOGGED_IN);
 
-			if (current_user_data && !current_user.data) {
+			if (current_user_data && (!current_user.data || current_user.data.id !== current_user_data.id)) {
 				if (keep_logged_in === 'true') {
 					LocalStorage.setItem(StorageKeys.USER_DATA, JSON.stringify(current_user_data));
 				}
