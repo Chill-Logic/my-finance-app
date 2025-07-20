@@ -146,7 +146,7 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 							label='Tipo *'
 							options={[
 								{ label: 'Entrada', value: 'deposit' },
-								{ label: 'Saída', value: 'spent' } ]}
+								{ label: 'Saída', value: 'withdraw' } ]}
 							value={values.kind}
 							onChange={(value) => setValues({ ...values, kind: value as TTransaction['kind'] })}
 						/>
