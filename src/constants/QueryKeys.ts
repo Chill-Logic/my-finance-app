@@ -1,6 +1,7 @@
 enum MODELS {
 	USER = 'user',
 	transaction = 'transaction',
+	wallet = 'wallet',
 }
 
 export const QUERY_KEYS = {
@@ -9,5 +10,8 @@ export const QUERY_KEYS = {
 	},
 	[MODELS.USER]: {
 		get_current: 'get-current-user',
+	},
+	[MODELS.wallet]: {
+		get_main: 'get-main-wallet',
 	},
 };

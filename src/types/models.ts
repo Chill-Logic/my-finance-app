@@ -1,18 +1,31 @@
+export type TTransactionKind = 'deposit' | 'withdraw';
+
 type TModelFields = {
 	id: string;
 	created_at: string;
 	updated_at: string;
+	discarded_at: string | null;
 };
 
-export type TUser = TModelFields & {
+// Função utilitária para melhorar a DX
+type WithModelFields<T> = TModelFields & T;
+
+export type TUser = WithModelFields<{
 	name: string;
 	email: string;
-};
+}>;
 
-export type TTransaction = {
-	date: string;
+export type TTransaction = WithModelFields<{
 	description: string;
-	transactionID: string;
-	type: 'deposit' | 'spent';
 	value: number;
-};
+	kind: TTransactionKind;
+	wallet_id: string;
+	transaction_date: string;
+}>;
+
+export type TWallet = WithModelFields<{
+	name: string;
+	owner_id: string;
+	transactions: TTransaction[];
+	total: number;
+}>;

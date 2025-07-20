@@ -1,4 +1,4 @@
-import { TUser, TTransaction } from './models';
+import { TTransaction, TUser, TWallet } from './models';
 
 export type TSignInResponse = TUser & {
 	token: string;
@@ -7,11 +7,6 @@ export type TSignInResponse = TUser & {
 export type TSignUpResponse = {
 	message: string;
 }
-
-export type TListTransactionsResponse = {
-	total: number;
-	transactions: TTransaction[];
-};
 
 export type TSignInBody = {
 	email: string;
@@ -30,3 +25,9 @@ export type TSignUpBody = {
 	email: string;
 	password: string;
 }
+
+export type TGetMainWalletResponse = TWallet
+export type TListTransactionsResponse = {
+	total: number;
+	transactions: TTransaction[];
+};

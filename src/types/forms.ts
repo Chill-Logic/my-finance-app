@@ -1,7 +1,7 @@
 import { TTransaction } from './models';
 
 export type TNewTransactionForm = {
-	type: TTransaction['type'];
+	kind: TTransaction['kind'];
 	description: string;
 	value: string;
 };

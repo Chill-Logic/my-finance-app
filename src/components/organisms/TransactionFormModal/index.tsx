@@ -5,7 +5,7 @@ import Toast from 'react-native-toast-message';
 import { useCreateTransactions } from '../../../hooks/api/transactions/useCreateTransactions';
 import { useUpdateTransactions } from '../../../hooks/api/transactions/useUpdateTransactions';
 
-import { formatMoney, unformatMoney } from '../../../utils/formatMoney';
+import { MoneyUtils } from '../../../utils/money';
 
 import { TNewTransactionForm } from '../../../types/forms';
 import { TTransaction } from '../../../types/models';
@@ -28,14 +28,14 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 	const { mutate: createTransactionMutation, isPending: is_create_transaction_pending } = useCreateTransactions();
 	const { mutate: updateTransactionMutation, isPending: is_update_transaction_pending } = useUpdateTransactions();
 	const [ values, setValues ] = useState<TNewTransactionForm>({
-		type: 'deposit',
+		kind: 'deposit',
 		description: '',
 		value: '',
 	});
 
 	const handleClose = () => {
 		setValues({
-			type: 'deposit',
+			kind: 'deposit',
 			description: '',
 			value: '',
 		});
@@ -43,16 +43,16 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 	};
 
 	const handleSave = () => {
-		const value = Number(unformatMoney(values.value)) / 100;
+		const value = Number(MoneyUtils.unformatMoney(values.value)) / 100;
 
 		if(transaction){
 			updateTransactionMutation({
 				body: {
-					type: values.type,
+					kind: values.kind,
 					description: values.description,
 					value,
 				},
-				id: transaction.transactionID,
+				id: transaction.id,
 				onSuccess: () => {
 					Toast.show({
 						type: 'success',
@@ -73,7 +73,7 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 		} else {
 			createTransactionMutation({
 				body: {
-					type: values.type,
+					kind: values.kind,
 					description: values.description,
 					value,
 				},
@@ -96,14 +96,21 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 		}
 	};
 
-	const is_submit_disabled = is_create_transaction_pending  || is_update_transaction_pending || !values.value || !values.description || !values.type;
+	const is_submit_disabled = (
+		is_create_transaction_pending  ||
+		is_update_transaction_pending ||
+		!values.value ||
+		!values.description ||
+		!values.kind ||
+		!transaction?.id
+	);
 
 	useEffect(() => {
 		if (transaction) {
 			setValues({
-				type: transaction.type,
+				kind: transaction.kind,
 				description: transaction.description,
-				value: formatMoney((transaction.value * 100).toString()),
+				value: MoneyUtils.formatMoney((transaction.value * 100).toString()),
 			});
 		}
 	}, [ transaction ]);
@@ -117,7 +124,7 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 		>
 			<ThemedView style={styles.modalOverlay}>
 				<ThemedView style={styles.modalContent}>
-					<ThemedText style={styles.title}>{transaction ? `Editar ${ transaction.type === 'deposit' ? 'Entrada' : 'Saída' }` : 'Nova Transação'}</ThemedText>
+					<ThemedText style={styles.title}>{transaction ? `Editar ${ transaction.kind === 'deposit' ? 'Entrada' : 'Saída' }` : 'Nova Transação'}</ThemedText>
 
 					<ThemedView style={styles.formGroup}>
 						<SelectInput
@@ -125,8 +132,8 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 							options={[
 								{ label: 'Entrada', value: 'deposit' },
 								{ label: 'Saída', value: 'spent' } ]}
-							value={values.type}
-							onChange={(value) => setValues({ ...values, type: value as TTransaction['type'] })}
+							value={values.kind}
+							onChange={(value) => setValues({ ...values, kind: value as TTransaction['kind'] })}
 						/>
 					</ThemedView>
 
@@ -144,7 +151,7 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 							label='Valor'
 							value={values.value}
 							onChangeText={(text) => {
-								const formattedValue = formatMoney(text);
+								const formattedValue = MoneyUtils.formatMoney(text);
 								setValues({ ...values, value: formattedValue });
 							}}
 							placeholder='R$ 0,00'

@@ -1,11 +1,12 @@
 import { Fragment } from 'react';
-import { Alert, ScrollView, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
+import { Alert, FlatList, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { useDeleteTransactions } from '../../../hooks/api/transactions/useDeleteTransactions';
 
 import { useRefresh } from '../../../context/refresh';
+import { DateUtils } from '../../../utils/date';
+import { MoneyUtils } from '../../../utils/money';
 
 import { TListTransactionsResponse } from '../../../types/api';
 import { TTransaction } from '../../../types/models';
@@ -25,42 +26,40 @@ const TransactionsList = (props: TTransactionsListProps) => {
 	const { mutate: deleteTransaction } = useDeleteTransactions();
 
 	const handleDeleteTransaction = (transaction: TTransaction) => {
-		Alert.alert(
-			'Excluir Transação',
-			'Deseja excluir esta transação?',
-			[
-				{
-					text: 'Cancelar',
-					style: 'cancel',
-				},
-				{
-					text: 'Excluir',
-					onPress: () => {
-						deleteTransaction({
-							id: transaction.transactionID,
-							onSuccess: () => {
-								Toast.show({
-									type: 'success',
-									text1: 'Transação excluída com sucesso',
-									text2: `A transação ${ transaction.description } foi excluída com sucesso`,
-								});
-							},
-							onError: () => {
-								Toast.show({
-									type: 'error',
-									text1: 'Erro ao excluir transação',
-									text2: `Não foi possível excluir a transação ${ transaction.description }`,
-								});
-							},
-						});
+		setTimeout(() => {
+			Alert.alert(
+				'Excluir Transação',
+				'Deseja excluir esta transação?',
+				[
+					{
+						text: 'Cancelar',
+						style: 'cancel',
 					},
-				},
-			],
-		);
-	};
-
-	const formatValue = (value: number) => {
-		return Math.abs(value).toFixed(2).replace('.', ',');
+					{
+						text: 'Excluir',
+						onPress: () => {
+							deleteTransaction({
+								id: transaction.id,
+								onSuccess: () => {
+									Toast.show({
+										type: 'success',
+										text1: 'Transação excluída com sucesso',
+										text2: `A transação ${ transaction.description } foi excluída com sucesso`,
+									});
+								},
+								onError: () => {
+									Toast.show({
+										type: 'error',
+										text1: 'Erro ao excluir transação',
+										text2: `Não foi possível excluir a transação ${ transaction.description }`,
+									});
+								},
+							});
+						},
+					},
+				],
+			);
+		}, 100);
 	};
 
 	const getTransactionColor = (type: string) => (
@@ -71,48 +70,73 @@ const TransactionsList = (props: TTransactionsListProps) => {
 		value >= 0 ? styles.textGreen : styles.textRed
 	);
 
+	const renderTransactionItem = ({ item: transaction }: { item: TTransaction }) => (
+		<TouchableOpacity
+			style={styles.transactionItem}
+			onPress={() => onClickTransaction(transaction)}
+		>
+			<ThemedView>
+				<ThemedText style={styles.transactionDate}>{DateUtils.formatDate(transaction.transaction_date)}</ThemedText>
+				<ThemedText style={styles.transactionDescription}>{transaction.description}</ThemedText>
+			</ThemedView>
+			<ThemedView style={styles.transactionRight}>
+				<ThemedText
+					style={[
+						styles.transactionValue,
+						getTransactionColor(transaction.kind),
+					]}
+				>
+					{MoneyUtils.formatMoney(transaction.value)}
+				</ThemedText>
+				<TouchableOpacity onPress={() => handleDeleteTransaction(transaction)}>
+					<ThemedText style={styles.transactionDelete}>
+						Excluir
+					</ThemedText>
+				</TouchableOpacity>
+			</ThemedView>
+		</TouchableOpacity>
+	);
+
+	const renderSeparator = () => (
+		<ThemedView style={styles.transactionSeparator} />
+	);
+
 	return (
 		<Fragment>
 			{data_transactions?.transactions && data_transactions?.transactions.length > 0 ? (
 				<Fragment>
-					<ScrollView
+					<FlatList
+						data={data_transactions.transactions}
+						renderItem={renderTransactionItem}
+						keyExtractor={(item) => item.id}
 						style={styles.transactionsList}
 						refreshControl={<RefreshControl {...refreshControlProps} />}
-					>
-						{data_transactions.transactions.map((transaction) => (
-							<TouchableOpacity key={transaction.transactionID} style={styles.transactionItem} onPress={() => onClickTransaction(transaction)}>
-								<ThemedView>
-									<ThemedText style={styles.transactionDate}>{transaction.date}</ThemedText>
-									<ThemedText style={styles.transactionDescription}>{transaction.description}</ThemedText>
-								</ThemedView>
-								<ThemedView style={styles.transactionRight}>
-									<ThemedText
-										style={[
-											styles.transactionValue,
-											getTransactionColor(transaction.type),
-										]}
-									>
-										{formatValue(transaction.value)}
-									</ThemedText>
-									<TouchableOpacity onPress={() => handleDeleteTransaction(transaction)}>
-										<Icon name='delete' size={16} color='#900' />
-									</TouchableOpacity>
-								</ThemedView>
-							</TouchableOpacity>
-						))}
-					</ScrollView>
-
+						showsVerticalScrollIndicator={false}
+						removeClippedSubviews={true}
+						maxToRenderPerBatch={10}
+						windowSize={10}
+						initialNumToRender={10}
+						ItemSeparatorComponent={renderSeparator}
+					/>
 					<ThemedView style={styles.balanceContainer}>
 						<ThemedText style={styles.balanceLabel}>Saldo</ThemedText>
 						<ThemedText style={getBalanceColor(Number(data_transactions?.total))}>
-							{formatValue(Number(data_transactions?.total))}
+							{MoneyUtils.formatMoney(Number(data_transactions?.total))}
 						</ThemedText>
 					</ThemedView>
 				</Fragment>
 			) : (
-				<ThemedText style={styles.emptyMessage}>
-          Não há registros de entrada ou saída
-				</ThemedText>
+				<Fragment>
+					<ThemedText style={styles.emptyMessage}>
+						Não há registros de entrada ou saída
+					</ThemedText>
+					<ThemedView style={styles.balanceContainer}>
+						<ThemedText style={styles.balanceLabel}>Saldo</ThemedText>
+						<ThemedText style={getBalanceColor(Number(data_transactions?.total))}>
+							{MoneyUtils.formatMoney(data_transactions?.total)}
+						</ThemedText>
+					</ThemedView>
+				</Fragment>
 			)}
 		</Fragment>
 	);
@@ -126,7 +150,9 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		marginBottom: 8,
+		padding: 10,
+		borderRadius: 10,
+		backgroundColor: '#121214',
 	},
 	transactionDate: {
 		color: '#C6C6C6',
@@ -136,8 +162,11 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 	},
 	transactionRight: {
-		flexDirection: 'row',
-		alignItems: 'center',
+		flexDirection: 'column',
+		alignItems: 'flex-end',
+	},
+	transactionDelete: {
+		color: '#900',
 	},
 	transactionValue: {
 		marginRight: 8,
@@ -160,6 +189,9 @@ const styles = StyleSheet.create({
 	},
 	textRed: {
 		color: 'red',
+	},
+	transactionSeparator: {
+		height: 10,
 	},
 });
 

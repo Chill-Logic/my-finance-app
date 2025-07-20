@@ -9,7 +9,7 @@ import { getAxiosInstance } from '../../useAxiosInstance';
 
 export const useUpdateTransactions = () => {
 	return useMutation({
-		mutationFn: async({ body, id }: TMutationParams<TListTransactionsResponse, Pick<TTransaction, 'type' | 'description' | 'value'>>) => {
+		mutationFn: async({ body, id }: TMutationParams<TListTransactionsResponse, Pick<TTransaction, 'kind' | 'description' | 'value'>>) => {
 			const axios = await getAxiosInstance();
 			const response = await axios.put<TListTransactionsResponse>(`/transactions/${ id }`, body);
 			return response.data;

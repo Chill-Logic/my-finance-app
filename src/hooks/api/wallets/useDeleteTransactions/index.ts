@@ -7,11 +7,11 @@ import { queryClient } from '../../../../../App';
 import { QUERY_KEYS } from '../../../../constants/QueryKeys';
 import { getAxiosInstance } from '../../useAxiosInstance';
 
-export const useCreateTransactions = () => {
+export const useDeleteTransactions = () => {
 	return useMutation({
-		mutationFn: async({ body }: TMutationParams<TListTransactionsResponse, Pick<TTransaction, 'kind' | 'description' | 'value'>>) => {
+		mutationFn: async({ id }: TMutationParams<TListTransactionsResponse, TTransaction>) => {
 			const axios = await getAxiosInstance();
-			const response = await axios.post<TListTransactionsResponse>('/transactions', body);
+			const response = await axios.delete<TListTransactionsResponse>(`/transactions/${ id }`);
 			return response.data;
 		},
 		onSuccess: (data, { onSuccess }) => {
