@@ -7,6 +7,7 @@ import { useDeleteTransactions } from '../../../hooks/api/transactions/useDelete
 import { useRefresh } from '../../../context/refresh';
 import { DateUtils } from '../../../utils/date';
 import { MoneyUtils } from '../../../utils/money';
+import { TextUtils } from '../../../utils/text';
 
 import { TListTransactionsResponse } from '../../../types/api';
 import { TTransaction } from '../../../types/models';
@@ -82,7 +83,7 @@ const TransactionsList = (props: TTransactionsListProps) => {
 			onPress={() => onClickTransaction(transaction)}
 		>
 			<ThemedView>
-				<ThemedText style={styles.transactionDescription}>{transaction.description}</ThemedText>
+				<ThemedText style={styles.transactionDescription}>{TextUtils.truncate({ text: transaction.description, maxLength: 35 })}</ThemedText>
 				<ThemedText style={styles.transactionDate}>{DateUtils.formatDate(transaction.transaction_date)}</ThemedText>
 			</ThemedView>
 			<ThemedView style={styles.transactionRight}>
