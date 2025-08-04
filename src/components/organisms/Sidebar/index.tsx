@@ -5,9 +5,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useIndexWallets } from '../../../hooks/api/wallets/useIndexWallets';
 
 import { useCurrentUserContext } from '../../../context/current_user';
+import { useRefresh } from '../../../context/refresh';
 import { useWallet } from '../../../context/wallet';
 
 import Dropdown from '../../atoms/Dropdown';
+import { Loader } from '../../atoms/Loader';
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
 
@@ -16,17 +18,19 @@ export interface IMenuOption {
 	title: string;
 	icon: string;
 	onClick: ()=> void;
+	metadata?: React.ReactNode;
 }
 
 interface ISidebarProps {
 	onClose: ()=> void;
-	onNavigate: (screen: string)=> void;
 	options: IMenuOption[];
+	navigate: (route: string)=> void;
 }
 
-const Sidebar = ({ onClose, onNavigate, options }: ISidebarProps) => {
+const Sidebar = ({ onClose, options, navigate }: ISidebarProps) => {
 	const { current_user } = useCurrentUserContext();
 	const { user_wallet, setUserWallet } = useWallet();
+	const { refresh, isRefreshing } = useRefresh({ all: true });
 
 	const { data: data_wallets } = useIndexWallets({
 		enabled: !!current_user?.data?.id,
@@ -41,6 +45,18 @@ const Sidebar = ({ onClose, onNavigate, options }: ISidebarProps) => {
 
 	return (
 		<ThemedView style={styles.container}>
+			<TouchableOpacity
+				style={[
+					styles.refreshButton,
+					isRefreshing && styles.refreshButtonLoading,
+				]}
+				onPress={() => {
+					refresh();
+				}}
+				disabled={isRefreshing}
+			>
+				{isRefreshing ? <Loader /> : <Icon name='refresh' size={24} color='#666' />}
+			</TouchableOpacity>
 			<ThemedView style={styles.header}>
 				<Dropdown
 					label='Visualizando a carteira:'
@@ -53,6 +69,7 @@ const Sidebar = ({ onClose, onNavigate, options }: ISidebarProps) => {
 						}
 
 						onClose();
+						navigate('Home');
 					}}
 					placeholder='Selecione uma carteira'
 				/>
@@ -69,6 +86,7 @@ const Sidebar = ({ onClose, onNavigate, options }: ISidebarProps) => {
 					>
 						<Icon name={item.icon} size={24} color='#666' style={styles.menuIcon} />
 						<ThemedText style={styles.menuText}>{item.title}</ThemedText>
+						{item.metadata}
 					</TouchableOpacity>
 				))}
 			</ScrollView>
@@ -81,6 +99,15 @@ const styles = StyleSheet.create({
 		flex: 1,
 		width: 280,
 		paddingTop: 50,
+	},
+	refreshButton: {
+		position: 'absolute',
+		top: 10,
+		right: 10,
+	},
+	refreshButtonLoading: {
+		opacity: 0.5,
+		transform: [ { rotate: '360deg' } ],
 	},
 	header: {
 		padding: 20,

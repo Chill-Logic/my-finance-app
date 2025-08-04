@@ -28,3 +28,8 @@ export type TWallet = WithModelFields<{
 	transactions: TTransaction[];
 	total: number;
 }>;
+
+export type TInvite = WithModelFields<{
+	wallet_name: string;
+	owner_name: string;
+}>;

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback } from 'react';
 import { RefreshControlProps } from 'react-native';
 
 import { queryClient } from '../../App';
+import { QUERY_KEYS } from '../constants/QueryKeys';
 import { useCurrentUserContext } from './current_user';
 
 type RefreshOptions =
@@ -23,6 +24,7 @@ export const RefreshProvider = ({ children }: { children: React.ReactNode }) => 
 };
 
 export const useRefresh = (options: RefreshOptions) => {
+
 	const context = useContext(RefreshContext);
 	if (!context) {
 		throw new Error('useRefresh deve ser usado dentro de um RefreshProvider');
@@ -41,7 +43,13 @@ export const useRefresh = (options: RefreshOptions) => {
 					options.keys.map(key => queryClient.invalidateQueries({ queryKey: [ key ] })),
 				);
 			} else if ('all' in options) {
-				await queryClient.clear();
+				await Promise.all(
+					Object.values(QUERY_KEYS).map(model_keys => {
+						return Promise.all(
+							Object.values(model_keys).map(key => queryClient.invalidateQueries({ queryKey: [ key ] })),
+						);
+					}),
+				);
 			} else {
 				throw new Error('É necessário fornecer "keys" ou "all" como opção');
 			}

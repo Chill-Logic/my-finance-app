@@ -73,10 +73,6 @@ const TransactionsList = (props: TTransactionsListProps) => {
 		type === 'deposit' ? styles.textGreen : styles.textRed
 	);
 
-	const getBalanceColor = (value: number) => (
-		value >= 0 ? styles.textGreen : styles.textRed
-	);
-
 	const renderTransactionItem = ({ item: transaction }: { item: TTransaction }) => (
 		<TouchableOpacity
 			style={styles.transactionItem}

@@ -1,4 +1,4 @@
-import { TTransaction, TUser, TWallet } from './models';
+import { TInvite, TTransaction, TUser, TWallet } from './models';
 
 export type TSignInResponse = TUser & {
 	token: string;
@@ -41,5 +41,7 @@ export type TCreateTransactionBody = {
 	wallet_id: string;
 	transaction_date: string;
 }
+
+export type TListInvitesResponse = TInvite[]
 
 export type TUpdateTransactionBody = Partial<Omit<TCreateTransactionBody, 'wallet_id'>>

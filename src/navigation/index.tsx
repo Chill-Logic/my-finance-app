@@ -5,10 +5,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TStackParam } from '../types/screen';
 
 import HomeScreen from '../screens/home';
+import WalletsInvitesScreen from '../screens/wallets_invites';
 import AUTH_SCREENS from './auth';
 
 const SCREENS: TStackParam[] = [
 	{ name: 'Home', component: HomeScreen },
+	{ name: 'WalletsInvites', component: WalletsInvitesScreen },
 	...AUTH_SCREENS,
 ];
 
