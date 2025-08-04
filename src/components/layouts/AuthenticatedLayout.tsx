@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView, StyleSheet } from 'react-native';
 
 import useShowCurrentUser from '../../hooks/api/user/useShowCurrentUser';
 
@@ -10,8 +9,8 @@ import { LocalStorage } from '../../services/storage';
 import { IScreenProps } from '../../types/screen';
 import { StorageKeys } from '../../types/storage';
 
-import { ThemedText } from '../atoms/ThemedText';
 import { ThemedView } from '../atoms/ThemedView';
+import Header from '../organisms/Header';
 
 const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNode; navigation: IScreenProps<any>['navigation'] }) => {
 	const { current_user, setCurrentUser } = useCurrentUserContext();
@@ -39,19 +38,11 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<ThemedView style={styles.header}>
-				<ThemedText style={styles.title}>Olá, {current_user?.data?.name}</ThemedText>
-				<ThemedView style={styles.headerButtons}>
-					<TouchableOpacity style={styles.headerButton} onPress={handleLogout}>
-						<Icon name='logout' size={24} color='#900' />
-					</TouchableOpacity>
-				</ThemedView>
-			</ThemedView>
+			<Header handleLogout={handleLogout} />
 
 			<ThemedView style={styles.content}>
 				{children}
 			</ThemedView>
-
 		</SafeAreaView>
 	);
 };
@@ -63,22 +54,6 @@ const styles = StyleSheet.create({
 	content: {
 		flex: 1,
 		padding: 20,
-	},
-	header: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		padding: 18,
-	},
-	headerButtons: {
-		flexDirection: 'row',
-		gap: 10,
-	},
-	headerButton: {
-		padding: 10,
-	},
-	title: {
-		fontSize: 26,
 	},
 });
 
