@@ -13,5 +13,6 @@ export const QUERY_KEYS = {
 	},
 	[MODELS.wallet]: {
 		get_main: 'get-main-wallet',
+		get_all: 'get-all-wallets',
 	},
 };

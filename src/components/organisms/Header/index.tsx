@@ -8,13 +8,17 @@ import { ThemedView } from '../../atoms/ThemedView';
 
 interface IHeaderProps {
 	handleLogout: ()=> void;
+	onOpenSidebar: ()=> void;
 }
 
-const Header = ({ handleLogout }: IHeaderProps) => {
+const Header = ({ handleLogout, onOpenSidebar }: IHeaderProps) => {
 	const { current_user } = useCurrentUserContext();
 
 	return (
 		<ThemedView style={styles.header}>
+			<TouchableOpacity style={styles.headerButton} onPress={onOpenSidebar}>
+				<Icon name='menu' size={24} color='#666' />
+			</TouchableOpacity>
 			<ThemedText style={styles.title}>Olá, {current_user?.data?.name}</ThemedText>
 			<ThemedView style={styles.headerButtons}>
 				<TouchableOpacity style={styles.headerButton} onPress={handleLogout}>

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { SafeAreaView, StyleSheet, Modal, TouchableOpacity, Animated } from 'react-native';
 
 import useShowCurrentUser from '../../hooks/api/user/useShowCurrentUser';
 
@@ -11,16 +11,43 @@ import { StorageKeys } from '../../types/storage';
 
 import { ThemedView } from '../atoms/ThemedView';
 import Header from '../organisms/Header';
+import Sidebar from '../organisms/Sidebar';
 
 const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNode; navigation: IScreenProps<any>['navigation'] }) => {
 	const { current_user, setCurrentUser } = useCurrentUserContext();
 	const { data: current_user_data } = useShowCurrentUser();
+	const [ isSidebarOpen, setIsSidebarOpen ] = useState(false);
+	const slideAnim = useState(new Animated.Value(-280))[0];
 
 	const handleLogout = () => {
 		LocalStorage.logout().then(() => {
 			setCurrentUser({ data: null });
 			navigation.replace('SignIn');
 		});
+	};
+
+	const handleOpenSidebar = () => {
+		setIsSidebarOpen(true);
+		Animated.timing(slideAnim, {
+			toValue: 0,
+			duration: 300,
+			useNativeDriver: true,
+		}).start();
+	};
+
+	const handleCloseSidebar = () => {
+		Animated.timing(slideAnim, {
+			toValue: -280,
+			duration: 300,
+			useNativeDriver: true,
+		}).start(() => {
+			setIsSidebarOpen(false);
+		});
+	};
+
+	const handleNavigate = (screen: string) => {
+		navigation.navigate(screen);
+		handleCloseSidebar();
 	};
 
 	useEffect(() => {
@@ -38,11 +65,35 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<Header handleLogout={handleLogout} />
+			<Header handleLogout={handleLogout} onOpenSidebar={handleOpenSidebar} />
 
 			<ThemedView style={styles.content}>
 				{children}
 			</ThemedView>
+
+			<Modal
+				visible={isSidebarOpen}
+				transparent={true}
+				animationType='none'
+				onRequestClose={handleCloseSidebar}
+			>
+				<TouchableOpacity
+					style={styles.overlay}
+					activeOpacity={1}
+					onPress={handleCloseSidebar}
+				>
+					<Animated.View
+						style={[
+							styles.sidebarContainer,
+							{
+								transform: [ { translateX: slideAnim } ],
+							},
+						]}
+					>
+						<Sidebar onClose={handleCloseSidebar} onNavigate={handleNavigate} />
+					</Animated.View>
+				</TouchableOpacity>
+			</Modal>
 		</SafeAreaView>
 	);
 };
@@ -54,6 +105,26 @@ const styles = StyleSheet.create({
 	content: {
 		flex: 1,
 		padding: 20,
+	},
+	overlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+	},
+	sidebarContainer: {
+		position: 'absolute',
+		left: 0,
+		top: 0,
+		bottom: 0,
+		width: 280,
+		backgroundColor: '#fff',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+		elevation: 5,
 	},
 });
 

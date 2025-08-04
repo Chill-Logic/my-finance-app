@@ -32,6 +32,8 @@ export type TListTransactionsResponse = {
 	transactions: TTransaction[];
 };
 
+export type TIndexWalletsResponse = TWallet[];
+
 export type TCreateTransactionBody = {
 	description: string;
 	value: number;
