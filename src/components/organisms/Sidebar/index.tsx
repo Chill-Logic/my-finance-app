@@ -57,6 +57,7 @@ const Sidebar = ({ onClose, options, navigate }: ISidebarProps) => {
 			>
 				{isRefreshing ? <Loader /> : <Icon name='refresh' size={24} color='#666' />}
 			</TouchableOpacity>
+
 			<ThemedView style={styles.header}>
 				<Dropdown
 					label='Visualizando a carteira:'
@@ -90,6 +91,10 @@ const Sidebar = ({ onClose, options, navigate }: ISidebarProps) => {
 					</TouchableOpacity>
 				))}
 			</ScrollView>
+
+			<ThemedView style={styles.footer}>
+				<ThemedText style={styles.versionText}>v0.0.3</ThemedText>
+			</ThemedView>
 		</ThemedView>
 	);
 };
@@ -138,6 +143,17 @@ const styles = StyleSheet.create({
 	},
 	menuText: {
 		fontSize: 16,
+	},
+	footer: {
+		padding: 20,
+		borderTopWidth: 1,
+		borderTopColor: '#333',
+		alignItems: 'center',
+	},
+	versionText: {
+		fontSize: 12,
+		color: '#666',
+		fontWeight: 'bold',
 	},
 });
 
