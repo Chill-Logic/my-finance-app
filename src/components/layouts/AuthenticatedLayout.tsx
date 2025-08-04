@@ -11,7 +11,7 @@ import { StorageKeys } from '../../types/storage';
 
 import { ThemedView } from '../atoms/ThemedView';
 import Header from '../organisms/Header';
-import Sidebar from '../organisms/Sidebar';
+import Sidebar, { IMenuOption } from '../organisms/Sidebar';
 
 const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNode; navigation: IScreenProps<any>['navigation'] }) => {
 	const { current_user, setCurrentUser } = useCurrentUserContext();
@@ -49,6 +49,13 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 		navigation.navigate(screen);
 		handleCloseSidebar();
 	};
+
+	const menuOptions: IMenuOption[] = [
+		{ id: 'home', title: 'Início', icon: 'home', onClick: () => handleNavigate('Home') },
+		{ id: 'wallets_invites', title: 'Convites', icon: 'wallet', onClick: () => handleNavigate('WalletsInvites') },
+		{ id: 'new_wallet', title: 'Nova Carteira', icon: 'add', onClick: () => handleNavigate('NewWallet') },
+		{ id: 'wallet_settings', title: 'Configurar Carteiras', icon: 'settings', onClick: () => handleNavigate('WalletSettings') },
+	];
 
 	useEffect(() => {
 		(async() => {
@@ -90,7 +97,11 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 							},
 						]}
 					>
-						<Sidebar onClose={handleCloseSidebar} onNavigate={handleNavigate} />
+						<Sidebar
+							onClose={handleCloseSidebar}
+							onNavigate={handleNavigate}
+							options={menuOptions}
+						/>
 					</Animated.View>
 				</TouchableOpacity>
 			</Modal>

@@ -11,24 +11,26 @@ import Dropdown from '../../atoms/Dropdown';
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
 
+export interface IMenuOption {
+	id: string;
+	title: string;
+	icon: string;
+	onClick: ()=> void;
+}
+
 interface ISidebarProps {
 	onClose: ()=> void;
 	onNavigate: (screen: string)=> void;
+	options: IMenuOption[];
 }
 
-const Sidebar = ({ onClose, onNavigate }: ISidebarProps) => {
+const Sidebar = ({ onClose, onNavigate, options }: ISidebarProps) => {
 	const { current_user } = useCurrentUserContext();
 	const { user_wallet, setUserWallet } = useWallet();
 
 	const { data: data_wallets } = useIndexWallets({
 		enabled: !!current_user?.data?.id,
 	});
-
-	const menuItems = [
-		{ id: 'home', title: 'Início', icon: 'home', screen: 'Home' },
-		{ id: 'wallets_invites', title: 'Convites', icon: 'wallet', screen: 'WalletsInvites' },
-		{ id: 'wallet_settings', title: 'Configurações da Carteira', icon: 'settings', screen: 'WalletSettings' },
-	];
 
 	const wallets_options = useMemo(() => {
 		return data_wallets?.map((wallet) => ({
@@ -55,13 +57,12 @@ const Sidebar = ({ onClose, onNavigate }: ISidebarProps) => {
 			</ThemedView>
 
 			<ScrollView style={styles.menuContainer}>
-				{menuItems.map((item) => (
+				{options.map((item) => (
 					<TouchableOpacity
 						key={item.id}
 						style={styles.menuItem}
 						onPress={() => {
-							onNavigate(item.screen);
-							onClose();
+							item.onClick();
 						}}
 					>
 						<Icon name={item.icon} size={24} color='#666' style={styles.menuIcon} />
