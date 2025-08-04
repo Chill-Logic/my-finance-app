@@ -64,7 +64,6 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 			metadata: data_invites?.length ? <ThemedText style={styles.invitesCount}>{data_invites?.length}</ThemedText> : null,
 		},
 		{ id: 'new_wallet', title: 'Nova Carteira', icon: 'add', onClick: () => setIsWalletFormModalVisible(true) },
-		{ id: 'wallet_settings', title: 'Configurar Carteiras', icon: 'settings', onClick: () => {} },
 	];
 
 	useEffect(() => {
@@ -82,7 +81,13 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 
 	return (
 		<SafeAreaView style={styles.container} {...refreshControlProps}>
-			<Header handleLogout={handleLogout} onOpenSidebar={handleOpenSidebar} />
+			<Header
+				handleLogout={handleLogout}
+				onOpenSidebar={handleOpenSidebar}
+				onOpenSettings={() => {
+					navigation.navigate('WalletsSettings');
+				}}
+			/>
 
 			<ThemedView style={styles.content}>
 				{children}

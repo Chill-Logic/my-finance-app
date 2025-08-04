@@ -115,17 +115,6 @@ const WalletsInvitesScreen = ({ navigation }: IScreenProps<'WalletsInvites'>) =>
 						</ThemedText>
 					)}
 				</ThemedView>
-
-				<ThemedView style={styles.buttonsContainer}>
-					<TouchableOpacity
-						style={styles.actionButton}
-						onPress={() => {}}
-					>
-						<ThemedText style={styles.actionButtonText}>
-              Novo Convite
-						</ThemedText>
-					</TouchableOpacity>
-				</ThemedView>
 			</ThemedView>
 		</AuthenticatedLayout>
 	);

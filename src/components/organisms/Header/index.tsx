@@ -1,7 +1,7 @@
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import { useCurrentUserContext } from '../../../context/current_user';
+import { useWallet } from '../../../context/wallet';
 
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
@@ -9,18 +9,23 @@ import { ThemedView } from '../../atoms/ThemedView';
 interface IHeaderProps {
 	handleLogout: ()=> void;
 	onOpenSidebar: ()=> void;
+	onOpenSettings: ()=> void;
 }
 
-const Header = ({ handleLogout, onOpenSidebar }: IHeaderProps) => {
-	const { current_user } = useCurrentUserContext();
+const Header = ({ handleLogout, onOpenSidebar, onOpenSettings }: IHeaderProps) => {
+	const { user_wallet } = useWallet();
 
 	return (
 		<ThemedView style={styles.header}>
 			<TouchableOpacity style={styles.headerButton} onPress={onOpenSidebar}>
 				<Icon name='menu' size={24} color='#666' />
 			</TouchableOpacity>
-			<ThemedText style={styles.title}>Olá, {current_user?.data?.name}</ThemedText>
+			<ThemedText style={styles.title}>{user_wallet.data?.name}</ThemedText>
 			<ThemedView style={styles.headerButtons}>
+				<TouchableOpacity style={styles.headerButton} onPress={onOpenSettings}>
+					<Icon name='settings' size={24} color='#666' />
+				</TouchableOpacity>
+
 				<TouchableOpacity style={styles.headerButton} onPress={handleLogout}>
 					<Icon name='logout' size={24} color='#900' />
 				</TouchableOpacity>

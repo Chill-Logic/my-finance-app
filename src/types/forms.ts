@@ -17,3 +17,7 @@ export type TSignUpForm = {
 export type TNewWalletForm = {
 	name: string;
 };
+
+export type TNewWalletInviteForm = {
+	user_email: string;
+};

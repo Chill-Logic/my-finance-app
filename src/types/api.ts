@@ -45,3 +45,8 @@ export type TCreateTransactionBody = {
 export type TListInvitesResponse = TInvite[]
 
 export type TUpdateTransactionBody = Partial<Omit<TCreateTransactionBody, 'wallet_id'>>
+
+export type TUserWalletInviteBody = {
+	user_email: string;
+	wallet_id: string;
+}
