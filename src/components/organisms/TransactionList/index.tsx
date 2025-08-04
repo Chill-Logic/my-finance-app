@@ -125,24 +125,12 @@ const TransactionsList = (props: TTransactionsListProps) => {
 						initialNumToRender={10}
 						ItemSeparatorComponent={renderSeparator}
 					/>
-					<ThemedView style={styles.balanceContainer}>
-						<ThemedText style={styles.balanceLabel}>Saldo</ThemedText>
-						<ThemedText style={getBalanceColor(Number(data_transactions?.total))}>
-							{MoneyUtils.formatMoney(Number(data_transactions?.total))}
-						</ThemedText>
-					</ThemedView>
 				</Fragment>
 			) : (
 				<Fragment>
 					<ThemedText style={styles.emptyMessage}>
 						Não há registros de entrada ou saída
 					</ThemedText>
-					<ThemedView style={styles.balanceContainer}>
-						<ThemedText style={styles.balanceLabel}>Saldo</ThemedText>
-						<ThemedText style={getBalanceColor(Number(data_transactions?.total))}>
-							{MoneyUtils.formatMoney(data_transactions?.total)}
-						</ThemedText>
-					</ThemedView>
 				</Fragment>
 			)}
 		</Fragment>
@@ -180,15 +168,6 @@ const styles = StyleSheet.create({
 	},
 	transactionValue: {
 		marginRight: 8,
-	},
-	balanceContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		marginTop: 16,
-	},
-	balanceLabel: {
-		fontWeight: 'bold',
-		textTransform: 'uppercase',
 	},
 	emptyMessage: {
 		color: '#868686',

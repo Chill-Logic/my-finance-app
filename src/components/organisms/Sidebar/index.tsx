@@ -51,6 +51,8 @@ const Sidebar = ({ onClose, onNavigate, options }: ISidebarProps) => {
 						if (new_wallet) {
 							setUserWallet({ data: new_wallet });
 						}
+
+						onClose();
 					}}
 					placeholder='Selecione uma carteira'
 				/>

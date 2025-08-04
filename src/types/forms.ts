@@ -13,3 +13,7 @@ export type TSignUpForm = {
 	senha: string;
 	confirmar_senha: string;
 }
+
+export type TNewWalletForm = {
+	name: string;
+};

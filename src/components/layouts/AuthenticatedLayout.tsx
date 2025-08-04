@@ -12,13 +12,14 @@ import { StorageKeys } from '../../types/storage';
 import { ThemedView } from '../atoms/ThemedView';
 import Header from '../organisms/Header';
 import Sidebar, { IMenuOption } from '../organisms/Sidebar';
+import { WalletFormModal } from '../organisms/WalletFormModal';
 
 const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNode; navigation: IScreenProps<any>['navigation'] }) => {
 	const { current_user, setCurrentUser } = useCurrentUserContext();
 	const { data: current_user_data } = useShowCurrentUser();
 	const [ isSidebarOpen, setIsSidebarOpen ] = useState(false);
 	const slideAnim = useState(new Animated.Value(-280))[0];
-
+	const [ is_wallet_form_modal_visible, setIsWalletFormModalVisible ] = useState(false);
 	const handleLogout = () => {
 		LocalStorage.logout().then(() => {
 			setCurrentUser({ data: null });
@@ -53,7 +54,7 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 	const menuOptions: IMenuOption[] = [
 		{ id: 'home', title: 'Início', icon: 'home', onClick: () => handleNavigate('Home') },
 		{ id: 'wallets_invites', title: 'Convites', icon: 'wallet', onClick: () => handleNavigate('WalletsInvites') },
-		{ id: 'new_wallet', title: 'Nova Carteira', icon: 'add', onClick: () => handleNavigate('NewWallet') },
+		{ id: 'new_wallet', title: 'Nova Carteira', icon: 'add', onClick: () => setIsWalletFormModalVisible(true) },
 		{ id: 'wallet_settings', title: 'Configurar Carteiras', icon: 'settings', onClick: () => handleNavigate('WalletSettings') },
 	];
 
@@ -105,6 +106,12 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 					</Animated.View>
 				</TouchableOpacity>
 			</Modal>
+
+			<WalletFormModal
+				visible={is_wallet_form_modal_visible}
+				onClose={() => setIsWalletFormModalVisible(false)}
+				onSuccess={() => setIsWalletFormModalVisible(false)}
+			/>
 		</SafeAreaView>
 	);
 };

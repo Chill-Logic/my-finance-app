@@ -4,6 +4,7 @@ import { TouchableOpacity, StyleSheet } from 'react-native';
 import { useListTransactions } from '../../hooks/api/transactions/useListTransactions';
 
 import { useWallet } from '../../context/wallet';
+import { MoneyUtils } from '../../utils/money';
 
 import { TTransaction } from '../../types/models';
 import { IScreenProps } from '../../types/screen';
@@ -24,6 +25,10 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 
 	const [ transaction, setTransaction ] = useState<TTransaction | null>(null);
 	const [ is_modal_visible, setIsModalVisible ] = useState(false);
+
+	const getBalanceColor = (value: number) => (
+		value >= 0 ? styles.textGreen : styles.textRed
+	);
 
 	return (
 		<AuthenticatedLayout navigation={navigation}>
@@ -49,6 +54,13 @@ const HomeScreen = ({ navigation }: IScreenProps<'Home'>) => {
 							}}
 						/>
 					)}
+				</ThemedView>
+
+				<ThemedView style={styles.balanceContainer}>
+					<ThemedText style={styles.balanceLabel}>Saldo</ThemedText>
+					<ThemedText style={getBalanceColor(Number(data_transactions?.total))}>
+						{MoneyUtils.formatMoney(Number(data_transactions?.total))}
+					</ThemedText>
 				</ThemedView>
 
 				<ThemedView style={styles.buttonsContainer}>
@@ -111,6 +123,28 @@ const styles = StyleSheet.create({
 	actionButtonText: {
 		color: 'white',
 		fontSize: 18,
+	},
+	balanceContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginTop: 16,
+		marginBottom: 16,
+		paddingHorizontal: 4,
+	},
+	balanceLabel: {
+		fontWeight: 'bold',
+		textTransform: 'uppercase',
+		fontSize: 16,
+	},
+	textGreen: {
+		color: 'green',
+		fontWeight: 'bold',
+		fontSize: 16,
+	},
+	textRed: {
+		color: 'red',
+		fontWeight: 'bold',
+		fontSize: 16,
 	},
 });
 
