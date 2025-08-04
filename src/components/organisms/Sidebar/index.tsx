@@ -27,6 +27,7 @@ const Sidebar = ({ onClose, onNavigate }: ISidebarProps) => {
 	const menuItems = [
 		{ id: 'home', title: 'Início', icon: 'home', screen: 'Home' },
 		{ id: 'wallets_invites', title: 'Convites', icon: 'wallet', screen: 'WalletsInvites' },
+		{ id: 'wallet_settings', title: 'Configurações da Carteira', icon: 'settings', screen: 'WalletSettings' },
 	];
 
 	const wallets_options = useMemo(() => {
