@@ -1,6 +1,8 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useCallback } from 'react';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
+
+import moment from 'moment';
 
 import { useDeleteTransactions } from '../../../hooks/api/transactions/useDeleteTransactions';
 import { useListTransactions } from '../../../hooks/api/transactions/useListTransactions';
@@ -13,6 +15,7 @@ import { TextUtils } from '../../../utils/text';
 
 import { TTransaction } from '../../../types/models';
 
+import MonthYearSelector from '../../atoms/MonthYearSelector';
 import Skeleton from '../../atoms/Skeleton';
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
@@ -24,14 +27,33 @@ const getBalanceColor = (value: number) => (
 	value >= 0 ? styles.textGreen : styles.textRed
 );
 
+type TDateParams = {
+	start_date: string;
+	end_date: string;
+};
+
 const TransactionsList = () => {
 	const { user_wallet } = useWallet();
+
+	const [ date_params, setDateParams ] = useState<TDateParams | null>(null);
 
 	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions({
 		params: {
 			wallet_id: user_wallet.data?.id || '',
+			...(date_params && {
+				start_date: date_params.start_date,
+				end_date: date_params.end_date,
+			}),
 		},
 	});
+	console.log('date_params :>> ', date_params);
+
+	const handleDateChange = useCallback((month: number, year: number) => {
+		setDateParams({
+			start_date: moment(new Date(year, month, 1)).startOf('day').toISOString(),
+			end_date: moment(new Date(year, month + 1, 0)).endOf('day').toISOString(),
+		});
+	}, []);
 
 	const [ transaction, setTransaction ] = useState<TTransaction | null>(null);
 	const [ is_modal_visible, setIsModalVisible ] = useState(false);
@@ -122,13 +144,10 @@ const TransactionsList = () => {
 
 	return (
 		<ThemedView
-			style={[
-				styles.transactionsContainer,
-				data_transactions?.transactions?.length
-					? styles.transactionsContainerWithData
-					: styles.transactionsContainerEmpty,
-			]}
+			style={styles.transactionsContainer}
 		>
+			<MonthYearSelector onChange={handleDateChange} />
+
 			{is_data_transactions_loading && (
 				<FlatList
 					data={new Array(10).fill(null).map((_, index) => ({ id: `${ index }` }))}
@@ -162,11 +181,11 @@ const TransactionsList = () => {
 							/>
 						</Fragment>
 					) : (
-						<Fragment>
+						<ThemedView style={styles.emptyContainer}>
 							<ThemedText style={styles.emptyMessage}>
 								Não há registros de entrada ou saída
 							</ThemedText>
-						</Fragment>
+						</ThemedView>
 					)}
 				</>
 			)}
@@ -206,7 +225,6 @@ const TransactionsList = () => {
 				}}
 				transaction={transaction}
 			/>
-
 		</ThemedView>
 	);
 };
@@ -214,18 +232,13 @@ const TransactionsList = () => {
 const styles = StyleSheet.create({
 	transactionsList: {
 		maxHeight: '95%',
+		marginTop: 24,
 	},
 	transactionsContainer: {
 		flex: 1,
 		borderRadius: 5,
-	},
-	transactionsContainerWithData: {
 		justifyContent: 'space-between',
 		alignItems: 'stretch',
-	},
-	transactionsContainerEmpty: {
-		justifyContent: 'center',
-		alignItems: 'center',
 	},
 	transactionItem: {
 		flexDirection: 'row',
@@ -254,6 +267,12 @@ const styles = StyleSheet.create({
 	},
 	transactionValue: {
 		marginRight: 8,
+	},
+	emptyContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		marginTop: 24,
 	},
 	emptyMessage: {
 		color: '#868686',
