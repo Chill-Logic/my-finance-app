@@ -35,11 +35,6 @@ type TDateParams = {
 const TransactionsList = () => {
 	const { user_wallet } = useWallet();
 
-	const [ date_params, setDateParams ] = useState<TDateParams>({
-		start_date: '',
-		end_date: '',
-	});
-
 	const [ month_year_selector_values, setMonthYearSelectorValues ] = useState({
 		month: new Date().getMonth(),
 		year: new Date().getFullYear(),
@@ -48,8 +43,8 @@ const TransactionsList = () => {
 	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions({
 		params: {
 			wallet_id: user_wallet.data?.id || '',
-			start_date: date_params.start_date,
-			end_date: date_params.end_date,
+			start_date: moment(new Date(month_year_selector_values.year, month_year_selector_values.month, 1)).startOf('day').toISOString(),
+			end_date: moment(new Date(month_year_selector_values.year, month_year_selector_values.month + 1, 0)).endOf('day').toISOString(),
 		},
 	});
 
@@ -144,10 +139,6 @@ const TransactionsList = () => {
 		<ThemedView style={styles.transactionsContainer}>
 			<MonthYearSelector
 				onChange={(month: number, year: number) => {
-					setDateParams({
-						start_date: moment(new Date(year, month, 1)).startOf('day').toISOString(),
-						end_date: moment(new Date(year, month + 1, 0)).endOf('day').toISOString(),
-					});
 					setMonthYearSelectorValues({
 						month,
 						year,

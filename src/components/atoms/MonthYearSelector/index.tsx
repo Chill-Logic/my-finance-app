@@ -93,6 +93,18 @@ const 	MonthYearSelector = (props: TMonthYearSelectorProps) => {
 						<View style={styles.modalHeader}>
 							<ThemedText style={styles.modalTitle}>Selecionar Período</ThemedText>
 							<TouchableOpacity
+								style={styles.todayButton}
+								onPress={() => {
+									setTempMonth(new Date().getMonth());
+									setTempYear(new Date().getFullYear());
+									onChange(new Date().getMonth(), new Date().getFullYear());
+									setIsModalVisible(false);
+								}}
+							>
+								<Icon name='calendar-today' size={20} color='#666' />
+								<ThemedText style={styles.modalTitle}>Hoje</ThemedText>
+							</TouchableOpacity>
+							<TouchableOpacity
 								style={styles.closeButton}
 								onPress={() => setIsModalVisible(false)}
 							>
@@ -221,7 +233,7 @@ const styles = StyleSheet.create({
 		paddingTop: 8,
 		paddingHorizontal: 24,
 		maxHeight: '85%',
-		minHeight: '50%',
+		minHeight: '60%',
 		shadowColor: '#000',
 		shadowOffset: {
 			width: 0,
@@ -244,6 +256,11 @@ const styles = StyleSheet.create({
 		fontSize: 20,
 		fontWeight: '600',
 		color: '#1a1a1a',
+	},
+	todayButton: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 8,
 	},
 	closeButton: {
 		width: 32,
