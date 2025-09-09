@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, TouchableOpacity, Modal, View, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -12,35 +12,22 @@ const MONTHS = [
 
 type TMonthYearSelectorProps = {
 	onChange: (month: number, year: number)=> void;
+	value: {
+		month: number;
+		year: number;
+	};
 };
 
-const MonthYearSelector = (props: TMonthYearSelectorProps) => {
-	const { onChange } = props;
+const 	MonthYearSelector = (props: TMonthYearSelectorProps) => {
+	const { onChange, value } = props;
 
-	const [ selectedMonth, setSelectedMonth ] = useState(new Date().getMonth());
-	const [ selectedYear, setSelectedYear ] = useState(new Date().getFullYear());
 	const [ isModalVisible, setIsModalVisible ] = useState(false);
-	const [ tempMonth, setTempMonth ] = useState(selectedMonth);
-	const [ tempYear, setTempYear ] = useState(selectedYear);
-
-	useEffect(() => {
-		onChange(selectedMonth, selectedYear);
-	}, [ selectedMonth, selectedYear, onChange ]);
-
-	const openModal = () => {
-		setTempMonth(selectedMonth);
-		setTempYear(selectedYear);
-		setIsModalVisible(true);
-	};
-
-	const closeModal = () => {
-		setIsModalVisible(false);
-	};
+	const [ tempMonth, setTempMonth ] = useState(value.month);
+	const [ tempYear, setTempYear ] = useState(value.year);
 
 	const confirmSelection = () => {
-		setSelectedMonth(tempMonth);
-		setSelectedYear(tempYear);
-		closeModal();
+		onChange(tempMonth, tempYear);
+		setIsModalVisible(false);
 	};
 
 	const generateYearOptions = () => {
@@ -56,31 +43,29 @@ const MonthYearSelector = (props: TMonthYearSelectorProps) => {
 		<>
 			<TouchableOpacity
 				style={styles.monthYearSelectorContainer}
-				onPress={openModal}
+				onPress={() => setIsModalVisible(true)}
 			>
 				<ThemedView style={styles.monthSelectorContainer}>
 					<TouchableOpacity
 						style={styles.monthChevron}
 						onPress={() => {
-							if(selectedMonth === 0) {
-								setSelectedMonth(11);
-								setSelectedYear(selectedYear - 1);
+							if(value.month === 0) {
+								onChange(11, value.year - 1);
 							} else {
-								setSelectedMonth(selectedMonth - 1);
+								onChange(value.month - 1, value.year);
 							}
 						}}
 					>
 						<Icon name='chevron-left' size={24} color='#666' />
 					</TouchableOpacity>
-					<ThemedText>{MONTHS[selectedMonth]}</ThemedText>
+					<ThemedText>{MONTHS[value.month]}</ThemedText>
 					<TouchableOpacity
 						style={styles.monthChevron}
 						onPress={() => {
-							if(selectedMonth === 11) {
-								setSelectedMonth(0);
-								setSelectedYear(selectedYear + 1);
+							if(value.month === 11) {
+								onChange(0, value.year + 1);
 							} else {
-								setSelectedMonth(selectedMonth + 1);
+								onChange(value.month + 1, value.year);
 							}
 						}}
 					>
@@ -88,7 +73,7 @@ const MonthYearSelector = (props: TMonthYearSelectorProps) => {
 					</TouchableOpacity>
 				</ThemedView>
 				<ThemedText style={styles.yearSelector}>
-					{selectedYear}
+					{value.year}
 				</ThemedText>
 			</TouchableOpacity>
 
@@ -96,20 +81,20 @@ const MonthYearSelector = (props: TMonthYearSelectorProps) => {
 				visible={isModalVisible}
 				transparent={true}
 				animationType='slide'
-				onRequestClose={closeModal}
+				onRequestClose={() => setIsModalVisible(false)}
 			>
 				<View style={styles.modalOverlay}>
 					<TouchableOpacity
 						style={styles.modalBackdrop}
 						activeOpacity={1}
-						onPress={closeModal}
+						onPress={() => setIsModalVisible(false)}
 					/>
 					<ThemedView style={styles.modalContainer}>
 						<View style={styles.modalHeader}>
 							<ThemedText style={styles.modalTitle}>Selecionar Período</ThemedText>
 							<TouchableOpacity
 								style={styles.closeButton}
-								onPress={closeModal}
+								onPress={() => setIsModalVisible(false)}
 							>
 								<Icon name='close' size={20} color='#666' />
 							</TouchableOpacity>
@@ -133,10 +118,12 @@ const MonthYearSelector = (props: TMonthYearSelectorProps) => {
 												]}
 												onPress={() => setTempMonth(index)}
 											>
-												<ThemedText style={[
-													styles.monthItemText,
-													tempMonth === index && styles.selectedMonthItemText,
-												]}>
+												<ThemedText
+													style={[
+														styles.monthItemText,
+														tempMonth === index && styles.selectedMonthItemText,
+													]}
+												>
 													{month.substring(0, 3)}
 												</ThemedText>
 											</TouchableOpacity>
@@ -156,10 +143,12 @@ const MonthYearSelector = (props: TMonthYearSelectorProps) => {
 												]}
 												onPress={() => setTempYear(year)}
 											>
-												<ThemedText style={[
-													styles.yearItemText,
-													tempYear === year && styles.selectedYearItemText,
-												]}>
+												<ThemedText
+													style={[
+														styles.yearItemText,
+														tempYear === year && styles.selectedYearItemText,
+													]}
+												>
 													{year}
 												</ThemedText>
 											</TouchableOpacity>

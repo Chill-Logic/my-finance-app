@@ -1,4 +1,4 @@
-import { Fragment, useState, useCallback } from 'react';
+import { Fragment, useState } from 'react';
 import { Alert, FlatList, StyleSheet, TouchableOpacity, RefreshControl } from 'react-native';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
@@ -35,25 +35,23 @@ type TDateParams = {
 const TransactionsList = () => {
 	const { user_wallet } = useWallet();
 
-	const [ date_params, setDateParams ] = useState<TDateParams | null>(null);
+	const [ date_params, setDateParams ] = useState<TDateParams>({
+		start_date: '',
+		end_date: '',
+	});
+
+	const [ month_year_selector_values, setMonthYearSelectorValues ] = useState({
+		month: new Date().getMonth(),
+		year: new Date().getFullYear(),
+	});
 
 	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions({
 		params: {
 			wallet_id: user_wallet.data?.id || '',
-			...(date_params && {
-				start_date: date_params.start_date,
-				end_date: date_params.end_date,
-			}),
+			start_date: date_params.start_date,
+			end_date: date_params.end_date,
 		},
 	});
-	console.log('date_params :>> ', date_params);
-
-	const handleDateChange = useCallback((month: number, year: number) => {
-		setDateParams({
-			start_date: moment(new Date(year, month, 1)).startOf('day').toISOString(),
-			end_date: moment(new Date(year, month + 1, 0)).endOf('day').toISOString(),
-		});
-	}, []);
 
 	const [ transaction, setTransaction ] = useState<TTransaction | null>(null);
 	const [ is_modal_visible, setIsModalVisible ] = useState(false);
@@ -143,10 +141,23 @@ const TransactionsList = () => {
 	);
 
 	return (
-		<ThemedView
-			style={styles.transactionsContainer}
-		>
-			<MonthYearSelector onChange={handleDateChange} />
+		<ThemedView style={styles.transactionsContainer}>
+			<MonthYearSelector
+				onChange={(month: number, year: number) => {
+					setDateParams({
+						start_date: moment(new Date(year, month, 1)).startOf('day').toISOString(),
+						end_date: moment(new Date(year, month + 1, 0)).endOf('day').toISOString(),
+					});
+					setMonthYearSelectorValues({
+						month,
+						year,
+					});
+				}}
+				value={{
+					month: month_year_selector_values.month,
+					year: month_year_selector_values.year,
+				}}
+			/>
 
 			{is_data_transactions_loading && (
 				<FlatList
@@ -205,7 +216,7 @@ const TransactionsList = () => {
 			<ThemedView style={styles.buttonsContainer}>
 				<TouchableOpacity
 					style={styles.actionButton}
-					disabled={is_data_transactions_loading || !user_wallet.data?.id || data_transactions?.transactions?.length === 0}
+					disabled={is_data_transactions_loading || !user_wallet.data?.id}
 					onPress={() => {
 						setTransaction(null);
 						setIsModalVisible(true);
@@ -219,11 +230,12 @@ const TransactionsList = () => {
 
 			<TransactionFormModal
 				visible={is_modal_visible}
+				transaction={transaction}
+				suggested_date={moment(new Date(month_year_selector_values.year, month_year_selector_values.month, new Date().getDate())).format('DD/MM/YYYY')}
 				onClose={() => {
 					setIsModalVisible(false);
 					setTransaction(null);
 				}}
-				transaction={transaction}
 			/>
 		</ThemedView>
 	);
