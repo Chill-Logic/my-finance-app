@@ -27,11 +27,6 @@ const getBalanceColor = (value: number) => (
 	value >= 0 ? styles.textGreen : styles.textRed
 );
 
-type TDateParams = {
-	start_date: string;
-	end_date: string;
-};
-
 const TransactionsList = () => {
 	const { user_wallet } = useWallet();
 
@@ -59,7 +54,7 @@ const TransactionsList = () => {
 
 	const { mutate: deleteTransaction } = useDeleteTransactions();
 
-	const handleDeleteTransaction = () => {
+	const handleDeleteTransaction = (transaction_to_delete: TTransaction) => {
 		setTimeout(() => {
 			Alert.alert(
 				'Excluir Transação',
@@ -72,24 +67,24 @@ const TransactionsList = () => {
 					{
 						text: 'Excluir',
 						onPress: () => {
-							if(!transaction){
+							if(!transaction_to_delete){
 								return;
 							}
 
 							deleteTransaction({
-								id: transaction.id,
+								id: transaction_to_delete.id,
 								onSuccess: () => {
 									Toast.show({
 										type: 'success',
 										text1: 'Transação excluída com sucesso',
-										text2: `A transação ${ transaction.description } foi excluída com sucesso`,
+										text2: `A transação ${ transaction_to_delete.description } foi excluída com sucesso`,
 									});
 								},
 								onError: () => {
 									Toast.show({
 										type: 'error',
 										text1: 'Erro ao excluir transação',
-										text2: `Não foi possível excluir a transação ${ transaction.description }`,
+										text2: `Não foi possível excluir a transação ${ transaction_to_delete.description }`,
 									});
 								},
 							});
@@ -122,7 +117,7 @@ const TransactionsList = () => {
 				>
 					{MoneyUtils.formatMoney(transaction_item.value)}
 				</ThemedText>
-				<TouchableOpacity onPress={() => handleDeleteTransaction()}>
+				<TouchableOpacity onPress={() => handleDeleteTransaction(transaction_item)}>
 					<ThemedText style={styles.transactionDelete}>
 						Excluir
 					</ThemedText>
