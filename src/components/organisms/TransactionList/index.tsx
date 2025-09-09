@@ -220,7 +220,7 @@ const TransactionsList = () => {
 			</ThemedView>
 
 			<TransactionFormModal
-				visible={is_modal_visible}
+				visible={is_modal_visible || Boolean(transaction)}
 				transaction={transaction}
 				suggested_date={moment(new Date(month_year_selector_values.year, month_year_selector_values.month, new Date().getDate())).format('DD/MM/YYYY')}
 				onClose={() => {

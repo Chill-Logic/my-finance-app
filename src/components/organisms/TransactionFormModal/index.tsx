@@ -132,12 +132,14 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 	}, [ transaction ]);
 
 	useEffect(() => {
-		if (suggested_date) {
-			setValues(prev => ({ ...prev, transaction_date: suggested_date }));
-		} else {
-			setValues(prev => ({ ...prev, transaction_date: DateUtils.formatDate(new Date().toISOString()) }));
+		if (!transaction) {
+			if (suggested_date) {
+				setValues(prev => ({ ...prev, transaction_date: suggested_date }));
+			} else {
+				setValues(prev => ({ ...prev, transaction_date: DateUtils.formatDate(new Date().toISOString()) }));
+			}
 		}
-	}, [ suggested_date, visible ]);
+	}, [ suggested_date, visible, transaction ]);
 
 	return (
 		<Modal
