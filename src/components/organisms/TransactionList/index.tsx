@@ -120,23 +120,6 @@ const TransactionsList = () => {
 		<ThemedView style={styles.transactionSeparator} />
 	);
 
-	if (is_data_transactions_loading) {
-		return (
-			<FlatList
-				data={new Array(10).fill(null).map((_, index) => ({ id: `${ index }` }))}
-				renderItem={() => <Skeleton height={50} />}
-				keyExtractor={(item) => item.id}
-				style={styles.transactionsList}
-				showsVerticalScrollIndicator={false}
-				removeClippedSubviews={true}
-				maxToRenderPerBatch={1}
-				windowSize={1}
-				initialNumToRender={1}
-				ItemSeparatorComponent={renderSeparator}
-			/>
-		);
-	}
-
 	return (
 		<ThemedView
 			style={[
@@ -146,28 +129,46 @@ const TransactionsList = () => {
 					: styles.transactionsContainerEmpty,
 			]}
 		>
-			{data_transactions?.transactions && data_transactions?.transactions.length > 0 ? (
-				<Fragment>
-					<FlatList
-						data={data_transactions.transactions}
-						renderItem={renderTransactionItem}
-						keyExtractor={(item) => item.id}
-						style={styles.transactionsList}
-						refreshControl={<RefreshControl {...refreshControlProps} />}
-						showsVerticalScrollIndicator={false}
-						removeClippedSubviews={true}
-						maxToRenderPerBatch={10}
-						windowSize={10}
-						initialNumToRender={10}
-						ItemSeparatorComponent={renderSeparator}
-					/>
-				</Fragment>
-			) : (
-				<Fragment>
-					<ThemedText style={styles.emptyMessage}>
-						Não há registros de entrada ou saída
-					</ThemedText>
-				</Fragment>
+			{is_data_transactions_loading && (
+				<FlatList
+					data={new Array(10).fill(null).map((_, index) => ({ id: `${ index }` }))}
+					renderItem={() => <Skeleton height={50} />}
+					keyExtractor={(item) => item.id}
+					style={styles.transactionsList}
+					showsVerticalScrollIndicator={false}
+					removeClippedSubviews={true}
+					windowSize={1}
+					initialNumToRender={1}
+					ItemSeparatorComponent={renderSeparator}
+				/>
+			)}
+
+			{!is_data_transactions_loading && (
+				<>
+					{data_transactions?.transactions && data_transactions?.transactions.length > 0 ? (
+						<Fragment>
+							<FlatList
+								data={data_transactions.transactions}
+								renderItem={renderTransactionItem}
+								keyExtractor={(item) => item.id}
+								style={styles.transactionsList}
+								refreshControl={<RefreshControl {...refreshControlProps} />}
+								showsVerticalScrollIndicator={false}
+								removeClippedSubviews={true}
+								maxToRenderPerBatch={10}
+								windowSize={10}
+								initialNumToRender={10}
+								ItemSeparatorComponent={renderSeparator}
+							/>
+						</Fragment>
+					) : (
+						<Fragment>
+							<ThemedText style={styles.emptyMessage}>
+								Não há registros de entrada ou saída
+							</ThemedText>
+						</Fragment>
+					)}
+				</>
 			)}
 
 			<ThemedView style={styles.balanceContainer}>
