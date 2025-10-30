@@ -110,7 +110,7 @@ const TransactionsList = () => {
 			<ThemedView>
 				<ThemedText style={styles.transactionDescription}>{TextUtils.truncate({ text: transaction_item.description, maxLength: 35 })}</ThemedText>
 				<ThemedText style={styles.transactionDate}>{DateUtils.formatDate(transaction_item.transaction_date)}</ThemedText>
-				{transaction_item.user_name && <ThemedText style={styles.transactionUserName}>{transaction_item.user_name}</ThemedText>}
+				{transaction_item.user?.name && <ThemedText style={styles.transactionUserName}>{transaction_item.user.name}</ThemedText>}
 			</ThemedView>
 			<ThemedView style={styles.transactionRight}>
 				<ThemedText
