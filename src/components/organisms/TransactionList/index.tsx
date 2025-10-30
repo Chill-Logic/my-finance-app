@@ -35,11 +35,14 @@ const TransactionsList = () => {
 		year: new Date().getFullYear(),
 	});
 
+	const start_date = moment(new Date(month_year_selector_values.year, month_year_selector_values.month, 1)).format('YYYY-MM-DD');
+	const end_date = moment(start_date).endOf('month').format('YYYY-MM-DD');
+
 	const { data: data_transactions, isLoading: is_data_transactions_loading } = useListTransactions({
 		params: {
 			wallet_id: user_wallet.data?.id || '',
-			start_date: moment(new Date(month_year_selector_values.year, month_year_selector_values.month, 1)).startOf('day').toISOString(),
-			end_date: moment(new Date(month_year_selector_values.year, month_year_selector_values.month + 1, 0)).endOf('day').toISOString(),
+			start_date: start_date,
+			end_date: end_date,
 		},
 	});
 
@@ -107,6 +110,7 @@ const TransactionsList = () => {
 			<ThemedView>
 				<ThemedText style={styles.transactionDescription}>{TextUtils.truncate({ text: transaction_item.description, maxLength: 35 })}</ThemedText>
 				<ThemedText style={styles.transactionDate}>{DateUtils.formatDate(transaction_item.transaction_date)}</ThemedText>
+				{transaction_item.user_name && <ThemedText style={styles.transactionUserName}>{transaction_item.user_name}</ThemedText>}
 			</ThemedView>
 			<ThemedView style={styles.transactionRight}>
 				<ThemedText
@@ -191,10 +195,26 @@ const TransactionsList = () => {
 				{is_data_transactions_loading && <Skeleton height={50} />}
 				{!is_data_transactions_loading && (
 					<Fragment>
-						<ThemedText style={styles.balanceLabel}>Saldo</ThemedText>
-						<ThemedText style={getBalanceColor(Number(data_transactions?.total))}>
-							{MoneyUtils.formatMoney(Number(data_transactions?.total))}
-						</ThemedText>
+						<ThemedView>
+							<ThemedText style={styles.balanceLabel}>Entrada</ThemedText>
+							<ThemedText style={styles.textGreen}>
+								{MoneyUtils.formatMoney(Number(data_transactions?.transactions.filter((transaction_item) => transaction_item.kind === 'deposit').reduce((acc, transaction_item) => acc + transaction_item.value, 0)))}
+							</ThemedText>
+						</ThemedView>
+
+						<ThemedView>
+							<ThemedText style={styles.balanceLabel}>Saída</ThemedText>
+							<ThemedText style={styles.textRed}>
+								{MoneyUtils.formatMoney(Number(data_transactions?.transactions.filter((transaction_item) => transaction_item.kind === 'withdraw').reduce((acc, transaction_item) => acc + transaction_item.value, 0)))}
+							</ThemedText>
+						</ThemedView>
+
+						<ThemedView>
+							<ThemedText style={styles.balanceLabel}>Total</ThemedText>
+							<ThemedText style={getBalanceColor(Number(data_transactions?.total))}>
+								{MoneyUtils.formatMoney(Number(data_transactions?.total))}
+							</ThemedText>
+						</ThemedView>
 					</Fragment>
 				)}
 			</ThemedView>
@@ -254,6 +274,10 @@ const styles = StyleSheet.create({
 	transactionDescription: {
 		fontWeight: 'bold',
 		backgroundColor: '#121214',
+	},
+	transactionUserName: {
+		color: '#C6C6C6',
+		fontSize: 12,
 	},
 	transactionRight: {
 		flexDirection: 'column',

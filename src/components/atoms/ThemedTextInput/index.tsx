@@ -9,9 +9,10 @@ import { ThemedView } from '../ThemedView';
 interface ThemedTextInputProps extends TextInputProps {
 	error?: string;
 	label?: string;
+	rightComponent?: React.ReactNode;
 }
 
-export const ThemedTextInput = ({ style, error, label, ...props }: ThemedTextInputProps) => {
+export const ThemedTextInput = ({ style, error, label, rightComponent, ...props }: ThemedTextInputProps) => {
 	const { theme } = useTheme();
 
 	return (
@@ -30,6 +31,7 @@ export const ThemedTextInput = ({ style, error, label, ...props }: ThemedTextInp
 				placeholderTextColor={theme.colors.placeholder}
 				{...props}
 			/>
+			{rightComponent && <ThemedView style={styles.rightComponent}>{rightComponent}</ThemedView>}
 		</ThemedView>
 	);
 };
@@ -45,5 +47,12 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		padding: 10,
 		marginTop: 5,
+	},
+	rightComponent: {
+		position: 'absolute',
+		right: 10,
+		top: '50%',
+		transform: [ { translateY: -18 } ],
+		backgroundColor: 'transparent',
 	},
 });

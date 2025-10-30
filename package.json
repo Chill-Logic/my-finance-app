@@ -7,7 +7,7 @@
     "adb:android": "node adb-reverse.js",
     "ios": "react-native run-ios",
     "lint": "eslint .",
-    "start": "react-native start",
+    "start": "react-native start --reset-cache",
     "test": "jest"
   },
   "dependencies": {
