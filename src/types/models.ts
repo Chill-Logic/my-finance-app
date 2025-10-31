@@ -20,7 +20,7 @@ export type TTransaction = WithModelFields<{
 	kind: TTransactionKind;
 	wallet_id: string;
 	transaction_date: string;
-	user_name?: string;
+	user?: TUser;
 }>;
 
 export type TWallet = WithModelFields<{

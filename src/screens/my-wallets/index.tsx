@@ -12,7 +12,7 @@ import { ThemedText } from '../../components/atoms/ThemedText';
 import { ThemedView } from '../../components/atoms/ThemedView';
 import AuthenticatedLayout from '../../components/layouts/AuthenticatedLayout';
 
-const WalletsInvitesScreen = ({ navigation }: IScreenProps<'WalletsInvites'>) => {
+const MyWalletsScreen = ({ navigation }: IScreenProps<'WalletsInvites'>) => {
 	const { user_wallet, setUserWallet } = useWallet();
 	const { data: data_wallets, isLoading: is_data_wallets_loading } = useIndexWallets();
 
@@ -176,4 +176,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default WalletsInvitesScreen;
+export default MyWalletsScreen;
