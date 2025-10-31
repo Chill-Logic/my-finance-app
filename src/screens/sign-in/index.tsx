@@ -4,6 +4,7 @@ import {
 	TouchableOpacity,
 } from 'react-native';
 import { Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import CheckBox from '@react-native-community/checkbox';
 
@@ -29,6 +30,7 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 
 	const [ form, setForm ] = useState({ email: '', password: '' });
 	const [ keep_logged_in, setKeepLoggedIn ] = useState(false);
+	const [ show_password, setShowPassword ] = useState(false);
 	const { mutate: signInMutation, isPending: is_sign_in_pending } = useSignIn();
 
 	const onChange = (key: string, value: string) => {
@@ -90,11 +92,19 @@ const SignInScreen = ({ navigation }: IScreenProps<'SignIn'>) => {
 					style={styles.input}
 					placeholder='Senha'
 					placeholderTextColor='#666'
-					secureTextEntry
 					autoComplete='password'
 					value={form.password}
 					onChangeText={(value) => onChange('password', value)}
 					editable={!is_sign_in_pending}
+					secureTextEntry={!show_password}
+					rightComponent={(
+						<TouchableOpacity onPress={() => setShowPassword(!show_password)}>
+							<Icon
+								name={show_password ? 'visibility' : 'visibility-off'}
+								size={24} color='#666'
+							/>
+						</TouchableOpacity>
+					)}
 				/>
 				<TouchableOpacity
 					style={[ styles.button, is_sign_in_pending && styles.buttonDisabled ]}

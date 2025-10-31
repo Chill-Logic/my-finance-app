@@ -59,11 +59,12 @@ const AuthenticatedLayout = ({ children, navigation }: { children: React.ReactNo
 		{
 			id: 'wallets_invites',
 			title: 'Convites',
-			icon: 'wallet',
+			icon: 'group-add',
 			onClick: () => navigation.navigate('WalletsInvites'),
 			metadata: data_invites?.length ? <ThemedText style={styles.invitesCount}>{data_invites?.length}</ThemedText> : null,
 		},
-		{ id: 'new_wallet', title: 'Nova Carteira', icon: 'add', onClick: () => setIsWalletFormModalVisible(true) },
+		{ id: 'my_wallets', title: 'Minhas Carteiras', icon: 'wallet', onClick: () => navigation.navigate('MyWallets') },
+		{ id: 'new_wallet', title: 'Nova Carteira', icon: 'create-new-folder', onClick: () => setIsWalletFormModalVisible(true) },
 	];
 
 	useEffect(() => {

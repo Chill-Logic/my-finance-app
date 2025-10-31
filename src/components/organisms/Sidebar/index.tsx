@@ -7,11 +7,14 @@ import { useIndexWallets } from '../../../hooks/api/wallets/useIndexWallets';
 import { useCurrentUserContext } from '../../../context/current_user';
 import { useRefresh } from '../../../context/refresh';
 import { useWallet } from '../../../context/wallet';
+import { LocalStorage } from '../../../services/storage';
 
 import Dropdown from '../../atoms/Dropdown';
 import { Loader } from '../../atoms/Loader';
 import { ThemedText } from '../../atoms/ThemedText';
 import { ThemedView } from '../../atoms/ThemedView';
+
+import { version } from '../../../../package.json';
 
 export interface IMenuOption {
 	id: string;
@@ -58,6 +61,11 @@ const Sidebar = ({ onClose, options, navigate }: ISidebarProps) => {
 				{isRefreshing ? <Loader /> : <Icon name='refresh' size={24} color='#666' />}
 			</TouchableOpacity>
 
+			<ThemedView style={styles.userInfo}>
+				<ThemedText style={styles.userInfoName}>{current_user?.data?.name}</ThemedText>
+				<ThemedText style={styles.userInfoEmail}>{current_user?.data?.email}</ThemedText>
+			</ThemedView>
+
 			<ThemedView style={styles.header}>
 				<Dropdown
 					label='Visualizando a carteira:'
@@ -91,15 +99,41 @@ const Sidebar = ({ onClose, options, navigate }: ISidebarProps) => {
 					</TouchableOpacity>
 				))}
 			</ScrollView>
+			<TouchableOpacity
+				style={styles.logoutButton}
+				onPress={() => {
+					LocalStorage.logout().then(() => {
+						onClose();
+						navigate('SignIn');
+					});
+				}}>
+				<Icon name='logout' size={24} color='#900' />
+				<ThemedText style={styles.logoutButtonText}>Sair</ThemedText>
+			</TouchableOpacity>
 
 			<ThemedView style={styles.footer}>
-				<ThemedText style={styles.versionText}>v0.0.3</ThemedText>
+				<ThemedText style={styles.versionText}>v{version}</ThemedText>
 			</ThemedView>
 		</ThemedView>
 	);
 };
 
 const styles = StyleSheet.create({
+	userInfo: {
+		padding: 20,
+		borderBottomWidth: 1,
+		borderBottomColor: '#333',
+	},
+	userInfoName: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		textAlign: 'center',
+	},
+	userInfoEmail: {
+		fontSize: 14,
+		color: '#666',
+		textAlign: 'center',
+	},
 	container: {
 		flex: 1,
 		width: 280,
@@ -153,6 +187,18 @@ const styles = StyleSheet.create({
 	versionText: {
 		fontSize: 12,
 		color: '#666',
+		fontWeight: 'bold',
+	},
+	logoutButton: {
+		padding: 10,
+		alignItems: 'center',
+		justifyContent: 'center',
+		flexDirection: 'row',
+		gap: 10,
+	},
+	logoutButtonText: {
+		fontSize: 14,
+		color: '#900',
 		fontWeight: 'bold',
 	},
 });

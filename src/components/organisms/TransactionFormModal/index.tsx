@@ -22,17 +22,18 @@ interface TransactionModalProps {
 	visible: boolean;
 	onClose: ()=> void;
 	transaction?: TTransaction | null;
+	suggested_date?: string;
 }
 
 const DEFAULT_VALUES: TNewTransactionForm = {
 	kind: 'deposit',
 	description: '',
 	value: '',
-	transaction_date: DateUtils.formatDate(new Date().toISOString()),
+	transaction_date: '',
 };
 
 export const TransactionFormModal = (props: TransactionModalProps) => {
-	const { visible, onClose, transaction } = props;
+	const { visible, onClose, transaction, suggested_date } = props;
 	const { user_wallet } = useWallet();
 
 	const { mutate: createTransactionMutation, isPending: is_create_transaction_pending } = useCreateTransactions();
@@ -129,6 +130,16 @@ export const TransactionFormModal = (props: TransactionModalProps) => {
 			});
 		}
 	}, [ transaction ]);
+
+	useEffect(() => {
+		if (!transaction) {
+			if (suggested_date) {
+				setValues(prev => ({ ...prev, transaction_date: suggested_date }));
+			} else {
+				setValues(prev => ({ ...prev, transaction_date: DateUtils.formatDate(new Date().toISOString()) }));
+			}
+		}
+	}, [ suggested_date, visible, transaction ]);
 
 	return (
 		<Modal
