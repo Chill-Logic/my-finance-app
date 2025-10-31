@@ -1,4 +1,4 @@
-package com.myfinance
+package com.my.finance.app
 
 import android.app.Application
 import com.facebook.react.PackageList
