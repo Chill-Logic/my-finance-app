@@ -1,4 +1,4 @@
-package com.my.finance.app
+package com.chilllogic.myfinance.app
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

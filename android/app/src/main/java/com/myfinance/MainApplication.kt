@@ -1,4 +1,4 @@
-package com.my.finance.app
+package com.chilllogic.myfinance.app
 
 import android.app.Application
 import com.facebook.react.PackageList
